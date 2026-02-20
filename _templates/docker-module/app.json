@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "id": "your_module_id",
+    "name": "Your Module Name",
+    "version": "0.1.0",
+    "owner": "Your Name",
+    "description": "Brief description of what this module does",
+    "tags": ["tag1", "tag2"],
+    "vertical": "retail"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 0,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [],
+    "consumes": []
+  },
+  "permissions": [
+    {
+      "resource": "your_module_id",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}
