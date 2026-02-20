@@ -1,0 +1,14 @@
+{
+  "name": "vruksha-blueprints-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Validation and scaffolding tools for Vruksha blueprints",
+  "scripts": {
+    "validate": "node validate.js --all",
+    "validate:file": "node validate.js",
+    "scaffold": "node scaffold.js"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vruksha.dev/schemas/app_contract.schema.json",
+  "title": "Vruksha App Contract",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["runtime"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["id", "name", "version"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_-]+$", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$" },
+        "owner": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "vertical": { "type": "string" },
+        "category": { "type": "string" },
+        "icon": { "type": "string" },
+        "mode": { "type": "string" }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["language", "entrypoints"],
+      "properties": {
+        "language": { "type": "string", "enum": ["python", "node", "rust"] },
+        "entrypoints": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "service": { "type": "string" },
+            "ui": { "type": "string" }
+          }
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "version": { "type": "string" }
+      }
+    },
+    "apis": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "openapi": { "type": "string" },
+        "basePath": { "type": "string", "default": "/" }
+      }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "bus": {
+          "type": "string",
+          "enum": ["nats", "local"],
+          "default": "nats",
+          "description": "Event bus type. NATS for Docker mode, local for Lite mode."
+        },
+        "produces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": true,
+            "properties": {
+              "name": { "type": "string" },
+              "schema": { "type": "string" },
+              "version": { "type": "string" },
+              "subject": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.>*-]+$",
+                "description": "NATS subject for this event (no wildcards recommended for producers)."
+              }
+            }
+          },
+          "default": []
+        },
+        "consumes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": true,
+            "properties": {
+              "name": { "type": "string" },
+              "schema": { "type": "string" },
+              "version": { "type": "string" },
+              "subject": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.>*-]+$",
+                "description": "NATS subject or pattern (consumers may use * and >)."
+              }
+            }
+          },
+          "default": []
+        }
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["resource", "actions"],
+            "additionalProperties": true,
+            "properties": {
+              "resource": { "type": "string" },
+              "actions": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        ]
+      },
+      "default": []
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "public": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "secrets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "liveness": { "type": "string", "default": "/healthz" },
+        "readiness": { "type": "string", "default": "/readyz" }
+      }
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": true,
+            "properties": {
+              "id": { "type": "string" },
+              "version": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "default": []
+    },
+    "ai": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "AI/LLM integration configuration for the app",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "gateway": { "type": "string", "description": "AI gateway service identifier" },
+        "intents": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of AI intents this app can handle"
+        },
+        "defaultProvider": { "type": "string", "description": "Default AI provider to use" },
+        "allowedProviders": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of allowed AI providers"
+        },
+        "fallbackChain": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Ordered list of fallback providers"
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Provider-specific configuration options"
+        }
+      }
+    },
+    "integrations": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "External API/service integration requirements",
+          "properties": {
+            "requires_external_api": {
+              "type": "boolean",
+              "default": false
+            },
+            "external_services": {
+              "type": "array",
+              "items": { "type": "string" },
+              "default": []
+            }
+          }
+        },
+        {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true },
+          "description": "List of app integrations"
+        }
+      ]
+    }
+  }
+}
