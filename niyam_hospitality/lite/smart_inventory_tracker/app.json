@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "id": "smart_inventory_tracker",
+    "name": "Smart Inventory Tracker",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Smart Inventory Tracker module for Niyam hospitality system",
+    "tags": ["hospitality", "smart_inventory_tracker"],
+    "vertical": "hospitality"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 8965,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "smart_inventory_tracker",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/health",
+    "readiness": "/health"
+  },
+  "depends_on": []
+}

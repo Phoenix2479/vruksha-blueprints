@@ -1,0 +1,484 @@
+openapi: 3.0.3
+info:
+  title: Barcode Labels API
+  description: |
+    API for managing label templates, print jobs, and products for barcode label printing.
+    Supports various barcode types (EAN-13, EAN-8, UPC-A, Code128, QR Code) and 
+    WYSIWYG label design with drag-and-drop elements.
+  version: 1.0.0
+  contact:
+    name: Vruksha Support
+    email: support@vruksha.io
+
+servers:
+  - url: http://localhost:8880
+    description: Development server
+
+tags:
+  - name: Templates
+    description: Label template management
+  - name: Products
+    description: Product listing for label printing
+  - name: Print Jobs
+    description: Print job management
+  - name: Health
+    description: Health and status endpoints
+
+paths:
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /api/templates:
+    get:
+      tags: [Templates]
+      summary: List all label templates
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  templates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LabelTemplate'
+    
+    post:
+      tags: [Templates]
+      summary: Create a new label template
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTemplateRequest'
+      responses:
+        '201':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  template:
+                    $ref: '#/components/schemas/LabelTemplate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/templates/{id}:
+    get:
+      tags: [Templates]
+      summary: Get template by ID
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  template:
+                    $ref: '#/components/schemas/LabelTemplate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags: [Templates]
+      summary: Update template
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTemplateRequest'
+      responses:
+        '200':
+          description: Template updated
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags: [Templates]
+      summary: Delete template
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: Template deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/products:
+    get:
+      tags: [Products]
+      summary: List products for label printing
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by name, SKU, or barcode
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+
+  /api/print-jobs:
+    get:
+      tags: [Print Jobs]
+      summary: List print jobs
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, printing, completed, failed]
+      responses:
+        '200':
+          description: List of print jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PrintJob'
+    
+    post:
+      tags: [Print Jobs]
+      summary: Create a print job
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrintJobRequest'
+      responses:
+        '201':
+          description: Print job created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  job:
+                    $ref: '#/components/schemas/PrintJob'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/print-jobs/{id}:
+    get:
+      tags: [Print Jobs]
+      summary: Get print job by ID
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Print job details
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    TenantId:
+      name: X-Tenant-ID
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Tenant identifier for multi-tenancy
+    
+    TemplateId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Template ID
+
+  schemas:
+    LabelSize:
+      type: object
+      required: [width, height]
+      properties:
+        width:
+          type: number
+          description: Width in mm
+          example: 50
+        height:
+          type: number
+          description: Height in mm
+          example: 30
+
+    LabelElement:
+      type: object
+      required: [id, type, x, y, enabled]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [productName, price, mrp, sku, barcode, batchNo, expiryDate, weight, customText]
+        x:
+          type: number
+          description: X position in mm
+        y:
+          type: number
+          description: Y position in mm
+        width:
+          type: number
+        height:
+          type: number
+        enabled:
+          type: boolean
+        font:
+          type: object
+          properties:
+            family:
+              type: string
+              default: Arial
+            size:
+              type: number
+              default: 12
+            bold:
+              type: boolean
+            italic:
+              type: boolean
+        barcodeType:
+          type: string
+          enum: [ean13, ean8, upca, code128, qrcode]
+        currencySymbol:
+          type: string
+          default: "₹"
+        prefix:
+          type: string
+        suffix:
+          type: string
+        value:
+          type: string
+          description: For customText type
+
+    LabelTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        size:
+          $ref: '#/components/schemas/LabelSize'
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelElement'
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateTemplateRequest:
+      type: object
+      required: [name, size]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        size:
+          $ref: '#/components/schemas/LabelSize'
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelElement'
+
+    UpdateTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        size:
+          $ref: '#/components/schemas/LabelSize'
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelElement'
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        mrp:
+          type: number
+        barcode:
+          type: string
+        batchNo:
+          type: string
+        expiryDate:
+          type: string
+          format: date
+        weight:
+          type: string
+
+    PrintJob:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        template_id:
+          type: string
+          format: uuid
+        product_ids:
+          type: array
+          items:
+            type: string
+        copies_per_product:
+          type: integer
+        total_labels:
+          type: integer
+        status:
+          type: string
+          enum: [pending, printing, completed, failed]
+        created_at:
+          type: string
+          format: date-time
+
+    CreatePrintJobRequest:
+      type: object
+      required: [template_id, product_ids]
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        product_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        copies_per_product:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 1
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Not found

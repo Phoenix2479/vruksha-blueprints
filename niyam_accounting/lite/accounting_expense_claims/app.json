@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "id": "accounting_expense_claims",
+    "name": "Expense Claims",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Employee expense submission, approval, and reimbursement tracking",
+    "tags": [
+      "accounting",
+      "expense",
+      "claims",
+      "reimbursement"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8902,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "local",
+    "produces": [],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_expense_claims",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

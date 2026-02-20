@@ -1,0 +1,174 @@
+{
+  "name": "Supply Chain Management",
+  "version": "1.0.0",
+  "description": "Manages supplier relationships, purchase orders, and supply chain visibility",
+  "module_path": "modules/supply_chain_management",
+  "handler": "supply_chain_managementhandler.py",
+  "intents": [
+    {
+      "name": "create_purchase_order",
+      "description": "Creates a new purchase order",
+      "parameters": [
+        {
+          "name": "supplier_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the supplier"
+        },
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "description": "Array of items with product_id, quantity, and price"
+        },
+        {
+          "name": "expected_delivery_date",
+          "type": "string",
+          "required": true,
+          "description": "Expected delivery date (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "update_purchase_order",
+      "description": "Updates an existing purchase order",
+      "parameters": [
+        {
+          "name": "po_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the purchase order"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": false,
+          "description": "New status of the purchase order"
+        },
+        {
+          "name": "expected_delivery_date",
+          "type": "string",
+          "required": false,
+          "description": "New expected delivery date"
+        },
+        {
+          "name": "items",
+          "type": "array",
+          "required": false,
+          "description": "Updated array of items"
+        }
+      ]
+    },
+    {
+      "name": "track_shipment",
+      "description": "Tracks a shipment",
+      "parameters": [
+        {
+          "name": "shipment_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the shipment"
+        }
+      ]
+    },
+    {
+      "name": "receive_goods",
+      "description": "Receives goods for a purchase order",
+      "parameters": [
+        {
+          "name": "po_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the purchase order"
+        },
+        {
+          "name": "received_items",
+          "type": "array",
+          "required": true,
+          "description": "Array of received items with product_id and quantity"
+        }
+      ]
+    },
+    {
+      "name": "manage_supplier",
+      "description": "Manages supplier information",
+      "parameters": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": "Action to perform (add, update)"
+        },
+        {
+          "name": "supplier_id",
+          "type": "string",
+          "required": false,
+          "description": "ID of the supplier (required for update action)"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Name of the supplier (required for add action)"
+        },
+        {
+          "name": "contact_info",
+          "type": "object",
+          "required": false,
+          "description": "Contact information (required for add action)"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "local_shipping",
+    "color": "#FF9800",
+    "sections": [
+      {
+        "name": "Purchase Orders",
+        "components": [
+          {
+            "type": "form",
+            "intent": "create_purchase_order",
+            "title": "Create Purchase Order"
+          },
+          {
+            "type": "form",
+            "intent": "update_purchase_order",
+            "title": "Update Purchase Order"
+          }
+        ]
+      },
+      {
+        "name": "Shipments",
+        "components": [
+          {
+            "type": "form",
+            "intent": "track_shipment",
+            "title": "Track Shipment"
+          }
+        ]
+      },
+      {
+        "name": "Goods Receipt",
+        "components": [
+          {
+            "type": "form",
+            "intent": "receive_goods",
+            "title": "Receive Goods"
+          }
+        ]
+      },
+      {
+        "name": "Suppliers",
+        "components": [
+          {
+            "type": "form",
+            "intent": "manage_supplier",
+            "title": "Manage Supplier"
+          }
+        ]
+      }
+    ]
+  }
+}

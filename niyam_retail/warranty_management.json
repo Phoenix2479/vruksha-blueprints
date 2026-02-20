@@ -1,0 +1,27 @@
+{
+  "module_name": "warranty_management",
+  "version": "1.0.0",
+  "description": "Management of product warranties and service contracts",
+  "intents": [
+    "register_warranty",
+    "get_warranty_by_id",
+    "get_warranty_by_product",
+    "get_customer_warranties",
+    "check_warranty_validity",
+    "file_warranty_claim",
+    "get_claim_by_id",
+    "get_warranty_claims",
+    "update_claim_status",
+    "get_warranty_statistics",
+    "get_upcoming_expirations"
+  ],
+  "dependencies": [
+    "product_management",
+    "customer_relationship_management"
+  ],
+  "data_files": [
+    "warranty_data.json"
+  ],
+  "author": "Vruksha AI Team",
+  "license": "MIT"
+}

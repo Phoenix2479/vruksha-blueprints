@@ -1,0 +1,108 @@
+{
+  "name": "Customer Relationship Management",
+  "version": "2.0.0",
+  "description": "360° customer view with loyalty, RFM segmentation, support ticketing, and lifetime value analysis.",
+  "module_path": "modules/customer_relationship_management",
+  "handler": "crm_handler.py",
+  "ui": {
+    "icon": "people_alt",
+    "color": "#E91E63",
+    "sections": [
+      {
+        "name": "Profiles",
+        "components": [
+          { "title": "Add Customer", "type": "form", "intent": "create_customer_profile" },
+          { "title": "Customer Search", "type": "search", "intent": "lookup_customer" },
+          { "title": "CLV Dashboard", "type": "chart", "intent": "calculate_clv" }
+        ]
+      },
+      {
+        "name": "Loyalty",
+        "components": [
+          { "title": "Issue Points", "type": "form", "intent": "issue_loyalty_points" },
+          { "title": "Redeem Rewards", "type": "form", "intent": "redeem_reward" }
+        ]
+      },
+      {
+        "name": "Engagement",
+        "components": [
+          { "title": "Segment Builder", "type": "form", "intent": "segment_customers" },
+          { "title": "Support Tickets", "type": "list", "intent": "manage_support_ticket" },
+          { "title": "Interaction Log", "type": "form", "intent": "track_customer_interaction" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "create_customer_profile",
+      "description": "Creates a new customer with rich data",
+      "parameters": [
+        { "name": "name", "type": "string", "required": true, "description": "Full Name" },
+        { "name": "contact_info", "type": "object", "required": true, "description": "Email, Phone, Address" },
+        { "name": "custom_fields", "type": "object", "required": false, "description": "Birthday, sizes, preferences" },
+        { "name": "tags", "type": "array", "required": false, "description": "VIP, Wholesale, Staff" }
+      ]
+    },
+    {
+      "name": "lookup_customer",
+      "description": "Finds customer by any identifier",
+      "parameters": [
+        { "name": "query", "type": "string", "required": true, "description": "Name, email, phone, or loyalty ID" }
+      ]
+    },
+    {
+      "name": "calculate_clv",
+      "description": "Computes Customer Lifetime Value",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "prediction_model", "type": "string", "required": false, "description": "Model to use (basic, predictive)" }
+      ]
+    },
+    {
+      "name": "issue_loyalty_points",
+      "description": "Awards points manually or via rule",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "points", "type": "number", "required": true, "description": "Amount to add" },
+        { "name": "reason", "type": "string", "required": true, "description": "Purchase, Birthday, Goodwill" },
+        { "name": "expiry_date", "type": "string", "required": false, "description": "Point expiration" }
+      ]
+    },
+    {
+      "name": "redeem_reward",
+      "description": "Processes loyalty redemption",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "reward_id", "type": "string", "required": true, "description": "Reward to redeem" }
+      ]
+    },
+    {
+      "name": "segment_customers",
+      "description": "Groups customers for marketing",
+      "parameters": [
+        { "name": "segment_name", "type": "string", "required": true, "description": "VIPs, Lapsed, Whales" },
+        { "name": "criteria", "type": "object", "required": true, "description": "RFM rules, location, spend history" }
+      ]
+    },
+    {
+      "name": "manage_support_ticket",
+      "description": "Handles service requests",
+      "parameters": [
+        { "name": "action", "type": "string", "required": true, "description": "create, update, close" },
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "subject", "type": "string", "required": true, "description": "Issue summary" },
+        { "name": "priority", "type": "string", "required": false, "description": "high, medium, low" }
+      ]
+    },
+    {
+      "name": "track_customer_interaction",
+      "description": "Logs calls, emails, or visits",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "type", "type": "string", "required": true, "description": "call, email, store_visit" },
+        { "name": "notes", "type": "string", "required": false, "description": "Summary" }
+      ]
+    }
+  ]
+}

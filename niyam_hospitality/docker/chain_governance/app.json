@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "id": "chain_governance",
+    "name": "Chain Governance",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Enforce brand standards, risk controls, and approvals across properties and brands.",
+    "tags": [
+      "service"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5269/remoteEntry.js"
+    },
+    "port": 8889,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "chain_governance.created",
+        "version": "1",
+        "subject": "hospitality.chain_governance.created.v1"
+      },
+      {
+        "name": "chain_governance.updated",
+        "version": "1",
+        "subject": "hospitality.chain_governance.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "chain_governance",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

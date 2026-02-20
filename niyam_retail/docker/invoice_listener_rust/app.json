@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "id": "invoice_listener_rust",
+    "name": "Invoice Listener (Rust)",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Rust service consuming invoice.created events and exposing stats",
+    "tags": []
+  },
+  "runtime": {
+    "language": "rust",
+    "entrypoints": {
+      "service": "rust/target/debug/invoice-listener",
+      "ui": "ui/invoice_listener_rust-remote"
+    },
+    "port": 8800,
+    "env": {
+      "SUBJECT": "billing.invoice.created.v1"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/invoice-listener"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "invoice_listener_rust.created",
+        "version": "1",
+        "subject": "invoice.invoice.listener.rust.created.v1"
+      },
+      {
+        "name": "invoice_listener_rust.updated",
+        "version": "1",
+        "subject": "invoice.invoice.listener.rust.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "invoice_listener_rust",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": []
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": [
+    {
+      "id": "invoice_service_rust",
+      "version": ">=0.1.0 <1"
+    }
+  ]
+}

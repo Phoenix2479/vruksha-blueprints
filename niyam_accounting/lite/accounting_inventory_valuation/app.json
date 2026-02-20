@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "id": "accounting_inventory_valuation",
+    "name": "Inventory Valuation",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Stock valuation methods (FIFO, LIFO, weighted average) and reporting",
+    "tags": [
+      "accounting",
+      "inventory",
+      "valuation",
+      "fifo",
+      "lifo"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8904,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "local",
+    "produces": [],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_inventory_valuation",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

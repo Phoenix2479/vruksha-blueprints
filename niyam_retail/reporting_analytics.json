@@ -1,0 +1,155 @@
+{
+  "name": "Reporting and Analytics",
+  "version": "1.0.0",
+  "description": "Provides advanced business intelligence features for generating various types of reports",
+  "module_path": "modules/reporting_analytics",
+  "handler": "reporting_analyticshandler.py",
+  "intents": [
+    {
+      "name": "generate_sales_report",
+      "description": "Generates a sales report",
+      "parameters": [
+        {
+          "name": "start_date",
+          "type": "string",
+          "required": false,
+          "description": "Start date for the report (YYYY-MM-DD)"
+        },
+        {
+          "name": "end_date",
+          "type": "string",
+          "required": false,
+          "description": "End date for the report (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "generate_inventory_report",
+      "description": "Generates an inventory report",
+      "parameters": [
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Filter by product category"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "required": false,
+          "description": "Filter by location"
+        }
+      ]
+    },
+    {
+      "name": "generate_customer_report",
+      "description": "Generates a customer report",
+      "parameters": [
+        {
+          "name": "start_date",
+          "type": "string",
+          "required": false,
+          "description": "Start date for the report (YYYY-MM-DD)"
+        },
+        {
+          "name": "end_date",
+          "type": "string",
+          "required": false,
+          "description": "End date for the report (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "generate_financial_report",
+      "description": "Generates a financial report",
+      "parameters": [
+        {
+          "name": "start_date",
+          "type": "string",
+          "required": false,
+          "description": "Start date for the report (YYYY-MM-DD)"
+        },
+        {
+          "name": "end_date",
+          "type": "string",
+          "required": false,
+          "description": "End date for the report (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "export_report",
+      "description": "Exports a report in a specific format",
+      "parameters": [
+        {
+          "name": "report_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the report to export"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "required": false,
+          "description": "Export format (json, csv, pdf) - defaults to json"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "bar_chart",
+    "color": "#9C27B0",
+    "sections": [
+      {
+        "name": "Sales Reports",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_sales_report",
+            "title": "Generate Sales Report"
+          }
+        ]
+      },
+      {
+        "name": "Inventory Reports",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_inventory_report",
+            "title": "Generate Inventory Report"
+          }
+        ]
+      },
+      {
+        "name": "Customer Reports",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_customer_report",
+            "title": "Generate Customer Report"
+          }
+        ]
+      },
+      {
+        "name": "Financial Reports",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_financial_report",
+            "title": "Generate Financial Report"
+          }
+        ]
+      },
+      {
+        "name": "Export",
+        "components": [
+          {
+            "type": "form",
+            "intent": "export_report",
+            "title": "Export Report"
+          }
+        ]
+      }
+    ]
+  }
+}

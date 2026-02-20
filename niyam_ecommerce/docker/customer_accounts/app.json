@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "id": "customer_accounts",
+    "name": "Customer Accounts",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Customer accounts, addresses, wishlists, and loyalty management for Niyam e-commerce",
+    "tags": [
+      "ecommerce",
+      "customers",
+      "loyalty",
+      "wishlists",
+      "addresses"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "ui/customer_accounts-remote"
+    },
+    "port": 9105,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "customer.created",
+        "version": "1",
+        "subject": "ecommerce.customer.created.v1"
+      },
+      {
+        "name": "customer.updated",
+        "version": "1",
+        "subject": "ecommerce.customer.updated.v1"
+      }
+    ],
+    "consumes": [
+      {
+        "name": "order.created",
+        "version": "1",
+        "subject": "ecommerce.order.created.v1"
+      }
+    ]
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "customer_accounts",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

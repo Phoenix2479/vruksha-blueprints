@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "id": "analytical_dashboard",
+    "name": "Analytical Dashboard",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Analytical Dashboard module for Niyam retail system",
+    "tags": ["retail", "analytical_dashboard"],
+    "vertical": "retail"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 8839,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "analytical_dashboard",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/health",
+    "readiness": "/health"
+  },
+  "depends_on": []
+}

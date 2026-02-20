@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "id": "abandoned_cart_recovery",
+    "name": "Abandoned Cart Recovery",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Abandoned Cart Recovery module for Niyam e-commerce system",
+    "tags": ["ecommerce", "abandoned_cart_recovery"],
+    "vertical": "ecommerce"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 9160,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "abandoned_cart_recovery",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

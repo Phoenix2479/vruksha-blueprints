@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "id": "self_checkin_kiosk",
+    "name": "Self Check-in Kiosk",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Mobile and kiosk-based self check-in system with ID scanning, digital registration, room key encoding, and contactless check-out.",
+    "tags": ["self_checkin", "kiosk", "mobile_checkin", "digital_key", "contactless"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5292/remoteEntry.js"
+    },
+    "port": 8932,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4223"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "self_checkin.checkin_started", "version": "1", "subject": "hospitality.self_checkin.checkin_started.v1" },
+      { "name": "self_checkin.id_scanned", "version": "1", "subject": "hospitality.self_checkin.id_scanned.v1" },
+      { "name": "self_checkin.key_issued", "version": "1", "subject": "hospitality.self_checkin.key_issued.v1" },
+      { "name": "self_checkin.checkout_completed", "version": "1", "subject": "hospitality.self_checkin.checkout_completed.v1" }
+    ],
+    "consumes": [
+      { "name": "front_office.reservation_created", "version": "1", "subject": "hospitality.front_office.reservation_created.v1" }
+    ]
+  },
+  "ai": { "enabled": true, "gateway": "vruksha-ai-gateway", "intents": ["scan_id_document", "verify_identity"] },
+  "permissions": [
+    { "resource": "self_checkin", "actions": ["read", "write", "update"] },
+    { "resource": "kiosk", "actions": ["read", "write"] },
+    { "resource": "digital_keys", "actions": ["read", "write", "delete"] }
+  ],
+  "config": {
+    "public": {
+      "allowEarlyCheckin": true,
+      "earlyCheckinHours": 2,
+      "lateCheckoutHours": 2,
+      "idScanRequired": true
+    },
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL", "KEY_ENCODER_API", "OCR_API_KEY"]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "billing_payments", "digital_id_processing"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@niyam/lite-food_costing_nutrition",
+  "version": "1.0.0",
+  "description": "Niyam Max Lite - Food Costing Nutrition (Hospitality)",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "node --watch service.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0",
+    "sql.js": "^1.10.0"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "id": "accounting_tax_engine",
+    "name": "Tax Engine",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "GST, TDS, and tax code management with India compliance and return filing",
+    "tags": [
+      "accounting",
+      "tax",
+      "gst",
+      "tds",
+      "india"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8844,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "tax_code.created",
+        "version": "1",
+        "subject": "accounting.tax_code.created.v1"
+      },
+      {
+        "name": "tax_code.updated",
+        "version": "1",
+        "subject": "accounting.tax_code.updated.v1"
+      },
+      {
+        "name": "gst_return.created",
+        "version": "1",
+        "subject": "accounting.gst_return.created.v1"
+      },
+      {
+        "name": "tds_transaction.created",
+        "version": "1",
+        "subject": "accounting.tds_transaction.created.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_tax_engine",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

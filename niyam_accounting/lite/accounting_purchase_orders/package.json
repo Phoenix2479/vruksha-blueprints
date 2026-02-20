@@ -1,0 +1,15 @@
+{
+  "name": "@niyam/accounting-purchase-orders",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "node --watch service.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}

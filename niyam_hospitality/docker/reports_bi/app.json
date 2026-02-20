@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "id": "reports_bi",
+    "name": "Reports & BI Dashboard",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Business intelligence with custom reports, KPI dashboards, scheduled reports, and data exports.",
+    "tags": ["reports", "bi", "analytics", "dashboard", "kpi", "exports"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": { "service": "service.js" },
+    "port": 8938,
+    "env": { "NATS_URL": "nats://127.0.0.1:4223" }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "reports.generated", "version": "1", "subject": "hospitality.reports.generated.v1" },
+      { "name": "reports.scheduled_run", "version": "1", "subject": "hospitality.reports.scheduled_run.v1" }
+    ]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["analytics_reporting", "revenue_management", "front_office"]
+}

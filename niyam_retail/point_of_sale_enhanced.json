@@ -1,0 +1,335 @@
+{
+  "name": "Point of Sale",
+  "version": "1.0.0",
+  "description": "Handles in-store transactions, cash register functions, and sales operations",
+  "module_path": "modules/point_of_sale",
+  "handler": "point_of_salehandler.py",
+  "intents": [
+    {
+      "name": "process_sale",
+      "description": "Processes a sale transaction",
+      "parameters": [
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "description": "Array of items with product_id, name, price, and quantity",
+          "ui_hints": {
+            "label": "Items",
+            "widget": "json_editor",
+            "width": "full"
+          }
+        },
+        {
+          "name": "payment_method",
+          "type": "string",
+          "required": true,
+          "description": "Payment method (cash, card, upi, etc.)",
+          "ui_hints": {
+            "label": "Payment Method",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "discount",
+          "type": "number",
+          "required": false,
+          "description": "Discount amount",
+          "ui_hints": {
+            "label": "Discount",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "tax",
+          "type": "number",
+          "required": false,
+          "description": "Tax amount",
+          "ui_hints": {
+            "label": "Tax",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "till_id",
+          "type": "string",
+          "required": false,
+          "description": "ID of the till (cash register)",
+          "ui_hints": {
+            "label": "Till Id",
+            "widget": "input",
+            "width": "small"
+          }
+        }
+      ],
+      "examples": [
+        "Process a sale",
+        "Ring up these items",
+        "Complete checkout"
+      ]
+    },
+    {
+      "name": "void_transaction",
+      "description": "Voids a transaction",
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the transaction to void",
+          "ui_hints": {
+            "label": "Transaction Id",
+            "widget": "input",
+            "width": "small"
+          }
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Reason for voiding the transaction",
+          "ui_hints": {
+            "label": "Reason",
+            "widget": "input",
+            "width": "medium"
+          }
+        }
+      ],
+      "examples": [
+        "Void this transaction",
+        "Cancel transaction",
+        "Reverse this sale"
+      ]
+    },
+    {
+      "name": "apply_discount",
+      "description": "Applies a discount to a transaction",
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the transaction",
+          "ui_hints": {
+            "label": "Transaction Id",
+            "widget": "input",
+            "width": "small"
+          }
+        },
+        {
+          "name": "discount_amount",
+          "type": "number",
+          "required": true,
+          "description": "Discount amount to apply",
+          "ui_hints": {
+            "label": "Discount Amount",
+            "widget": "input",
+            "width": "small"
+          }
+        }
+      ],
+      "examples": [
+        "Execute apply discount",
+        "Run apply_discount"
+      ]
+    },
+    {
+      "name": "process_return",
+      "description": "Processes a return transaction",
+      "parameters": [
+        {
+          "name": "original_transaction_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the original transaction",
+          "ui_hints": {
+            "label": "Original Transaction Id",
+            "widget": "input",
+            "width": "small"
+          }
+        },
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "description": "Array of items being returned with product_id, name, price, and quantity",
+          "ui_hints": {
+            "label": "Items",
+            "widget": "json_editor",
+            "width": "full"
+          }
+        },
+        {
+          "name": "payment_method",
+          "type": "string",
+          "required": false,
+          "description": "Refund method (defaults to refund_to_original)",
+          "ui_hints": {
+            "label": "Payment Method",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "till_id",
+          "type": "string",
+          "required": false,
+          "description": "ID of the till (cash register)",
+          "ui_hints": {
+            "label": "Till Id",
+            "widget": "input",
+            "width": "small"
+          }
+        }
+      ],
+      "examples": [
+        "Execute process return",
+        "Run process_return"
+      ]
+    },
+    {
+      "name": "generate_receipt",
+      "description": "Generates a receipt for a transaction",
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the transaction",
+          "ui_hints": {
+            "label": "Transaction Id",
+            "widget": "input",
+            "width": "small"
+          }
+        }
+      ],
+      "examples": [
+        "Execute generate receipt",
+        "Run generate_receipt"
+      ]
+    },
+    {
+      "name": "manage_till",
+      "description": "Manages a till (cash register)",
+      "parameters": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": "Action to perform (open, close, get_balance)",
+          "ui_hints": {
+            "label": "Action",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "till_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the till",
+          "ui_hints": {
+            "label": "Till Id",
+            "widget": "input",
+            "width": "small"
+          }
+        },
+        {
+          "name": "opening_balance",
+          "type": "number",
+          "required": false,
+          "description": "Opening balance (required for open action)",
+          "ui_hints": {
+            "label": "Opening Balance",
+            "widget": "input",
+            "width": "medium"
+          }
+        },
+        {
+          "name": "closing_balance",
+          "type": "number",
+          "required": false,
+          "description": "Closing balance (required for close action)",
+          "ui_hints": {
+            "label": "Closing Balance",
+            "widget": "input",
+            "width": "medium"
+          }
+        }
+      ],
+      "examples": [
+        "Execute manage till",
+        "Run manage_till"
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "point_of_sale",
+    "color": "#FF5722",
+    "sections": [
+      {
+        "name": "Sales",
+        "components": [
+          {
+            "type": "form",
+            "intent": "process_sale",
+            "title": "Process Sale"
+          }
+        ]
+      },
+      {
+        "name": "Returns",
+        "components": [
+          {
+            "type": "form",
+            "intent": "process_return",
+            "title": "Process Return"
+          }
+        ]
+      },
+      {
+        "name": "Transaction Management",
+        "components": [
+          {
+            "type": "form",
+            "intent": "void_transaction",
+            "title": "Void Transaction"
+          },
+          {
+            "type": "form",
+            "intent": "apply_discount",
+            "title": "Apply Discount"
+          }
+        ]
+      },
+      {
+        "name": "Receipts",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_receipt",
+            "title": "Generate Receipt"
+          }
+        ]
+      },
+      {
+        "name": "Till Management",
+        "components": [
+          {
+            "type": "form",
+            "intent": "manage_till",
+            "title": "Manage Till"
+          }
+        ]
+      }
+    ]
+  },
+  "category": "operations",
+  "business_types": [
+    "retail",
+    "service"
+  ]
+}

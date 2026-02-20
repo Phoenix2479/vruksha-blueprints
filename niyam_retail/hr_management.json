@@ -1,0 +1,482 @@
+{
+  "name": "HR Management",
+  "version": "1.0.0",
+  "description": "Handles employee data, attendance, leave management, and performance tracking",
+  "module_path": "modules/hr_management",
+  "handler": "hr_managementhandler.py",
+  "intents": [
+    {
+      "name": "add_employee",
+      "description": "Adds a new employee",
+      "parameters": [
+        {
+          "name": "first_name",
+          "type": "string",
+          "required": true,
+          "description": "First name of the employee"
+        },
+        {
+          "name": "last_name",
+          "type": "string",
+          "required": true,
+          "description": "Last name of the employee"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "description": "Email address"
+        },
+        {
+          "name": "date_of_joining",
+          "type": "string",
+          "required": true,
+          "description": "Date of joining (YYYY-MM-DD)"
+        },
+        {
+          "name": "phone",
+          "type": "string",
+          "required": false,
+          "description": "Phone number"
+        },
+        {
+          "name": "address",
+          "type": "string",
+          "required": false,
+          "description": "Address"
+        },
+        {
+          "name": "date_of_birth",
+          "type": "string",
+          "required": false,
+          "description": "Date of birth (YYYY-MM-DD)"
+        },
+        {
+          "name": "department",
+          "type": "string",
+          "required": false,
+          "description": "Department"
+        },
+        {
+          "name": "designation",
+          "type": "string",
+          "required": false,
+          "description": "Designation"
+        },
+        {
+          "name": "reporting_to",
+          "type": "string",
+          "required": false,
+          "description": "Reporting manager"
+        },
+        {
+          "name": "employment_status",
+          "type": "string",
+          "required": false,
+          "description": "Employment status (active, inactive)"
+        },
+        {
+          "name": "employment_type",
+          "type": "string",
+          "required": false,
+          "description": "Employment type (full_time, part_time, contract)"
+        },
+        {
+          "name": "salary",
+          "type": "number",
+          "required": false,
+          "description": "Salary"
+        }
+      ]
+    },
+    {
+      "name": "update_employee",
+      "description": "Updates an existing employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "first_name",
+          "type": "string",
+          "required": false,
+          "description": "First name of the employee"
+        },
+        {
+          "name": "last_name",
+          "type": "string",
+          "required": false,
+          "description": "Last name of the employee"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": false,
+          "description": "Email address"
+        },
+        {
+          "name": "phone",
+          "type": "string",
+          "required": false,
+          "description": "Phone number"
+        },
+        {
+          "name": "address",
+          "type": "string",
+          "required": false,
+          "description": "Address"
+        },
+        {
+          "name": "date_of_birth",
+          "type": "string",
+          "required": false,
+          "description": "Date of birth (YYYY-MM-DD)"
+        },
+        {
+          "name": "department",
+          "type": "string",
+          "required": false,
+          "description": "Department"
+        },
+        {
+          "name": "designation",
+          "type": "string",
+          "required": false,
+          "description": "Designation"
+        },
+        {
+          "name": "reporting_to",
+          "type": "string",
+          "required": false,
+          "description": "Reporting manager"
+        },
+        {
+          "name": "employment_status",
+          "type": "string",
+          "required": false,
+          "description": "Employment status (active, inactive)"
+        },
+        {
+          "name": "employment_type",
+          "type": "string",
+          "required": false,
+          "description": "Employment type (full_time, part_time, contract)"
+        },
+        {
+          "name": "salary",
+          "type": "number",
+          "required": false,
+          "description": "Salary"
+        }
+      ]
+    },
+    {
+      "name": "delete_employee",
+      "description": "Deletes an employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        }
+      ]
+    },
+    {
+      "name": "mark_attendance",
+      "description": "Marks attendance for an employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "Date (YYYY-MM-DD)"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "Attendance status (present, absent, leave)"
+        },
+        {
+          "name": "check_in",
+          "type": "string",
+          "required": false,
+          "description": "Check-in time (HH:MM)"
+        },
+        {
+          "name": "check_out",
+          "type": "string",
+          "required": false,
+          "description": "Check-out time (HH:MM)"
+        },
+        {
+          "name": "notes",
+          "type": "string",
+          "required": false,
+          "description": "Additional notes"
+        }
+      ]
+    },
+    {
+      "name": "apply_leave",
+      "description": "Applies for leave",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "leave_type",
+          "type": "string",
+          "required": true,
+          "description": "Type of leave (casual, sick, annual)"
+        },
+        {
+          "name": "start_date",
+          "type": "string",
+          "required": true,
+          "description": "Start date (YYYY-MM-DD)"
+        },
+        {
+          "name": "end_date",
+          "type": "string",
+          "required": true,
+          "description": "End date (YYYY-MM-DD)"
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": true,
+          "description": "Reason for leave"
+        }
+      ]
+    },
+    {
+      "name": "approve_leave",
+      "description": "Approves or rejects a leave application",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "leave_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the leave application"
+        },
+        {
+          "name": "decision",
+          "type": "string",
+          "required": true,
+          "description": "Decision (approve, reject)"
+        },
+        {
+          "name": "approved_by",
+          "type": "string",
+          "required": false,
+          "description": "Person who approved/rejected"
+        },
+        {
+          "name": "comments",
+          "type": "string",
+          "required": false,
+          "description": "Additional comments"
+        }
+      ]
+    },
+    {
+      "name": "record_performance_review",
+      "description": "Records a performance review for an employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "reviewer_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the reviewer"
+        },
+        {
+          "name": "review_period",
+          "type": "string",
+          "required": true,
+          "description": "Review period (e.g., \"Q1 2023\")"
+        },
+        {
+          "name": "overall_rating",
+          "type": "number",
+          "required": false,
+          "description": "Overall rating (1-5)"
+        },
+        {
+          "name": "strengths",
+          "type": "string",
+          "required": false,
+          "description": "Strengths of the employee"
+        },
+        {
+          "name": "areas_for_improvement",
+          "type": "string",
+          "required": false,
+          "description": "Areas for improvement"
+        },
+        {
+          "name": "goals_for_next_period",
+          "type": "string",
+          "required": false,
+          "description": "Goals for next period"
+        },
+        {
+          "name": "feedback",
+          "type": "string",
+          "required": false,
+          "description": "Additional feedback"
+        }
+      ]
+    },
+    {
+      "name": "set_goals",
+      "description": "Sets performance goals for an employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "goal_period",
+          "type": "string",
+          "required": true,
+          "description": "Goal period (e.g., \"2023\")"
+        },
+        {
+          "name": "goals",
+          "type": "array",
+          "required": true,
+          "description": "Array of goals"
+        }
+      ]
+    },
+    {
+      "name": "track_performance",
+      "description": "Tracks KPIs for an employee",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the employee"
+        },
+        {
+          "name": "kpi_name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the KPI"
+        },
+        {
+          "name": "kpi_value",
+          "type": "number",
+          "required": true,
+          "description": "Value of the KPI"
+        },
+        {
+          "name": "target_value",
+          "type": "number",
+          "required": false,
+          "description": "Target value for the KPI"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "people",
+    "color": "#2196F3",
+    "sections": [
+      {
+        "name": "Employee Management",
+        "components": [
+          {
+            "type": "form",
+            "intent": "add_employee",
+            "title": "Add Employee"
+          },
+          {
+            "type": "form",
+            "intent": "update_employee",
+            "title": "Update Employee"
+          },
+          {
+            "type": "form",
+            "intent": "delete_employee",
+            "title": "Delete Employee"
+          }
+        ]
+      },
+      {
+        "name": "Attendance",
+        "components": [
+          {
+            "type": "form",
+            "intent": "mark_attendance",
+            "title": "Mark Attendance"
+          }
+        ]
+      },
+      {
+        "name": "Leave Management",
+        "components": [
+          {
+            "type": "form",
+            "intent": "apply_leave",
+            "title": "Apply Leave"
+          },
+          {
+            "type": "form",
+            "intent": "approve_leave",
+            "title": "Approve/Reject Leave"
+          }
+        ]
+      },
+      {
+        "name": "Performance",
+        "components": [
+          {
+            "type": "form",
+            "intent": "record_performance_review",
+            "title": "Record Performance Review"
+          },
+          {
+            "type": "form",
+            "intent": "set_goals",
+            "title": "Set Goals"
+          },
+          {
+            "type": "form",
+            "intent": "track_performance",
+            "title": "Track Performance"
+          }
+        ]
+      }
+    ]
+  }
+}

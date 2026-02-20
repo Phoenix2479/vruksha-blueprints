@@ -1,0 +1,63 @@
+{
+  "name": "Mobile Store Ops",
+  "version": "1.0.0",
+  "description": "API backend for the staff mobile app enabling floor operations.",
+  "module_path": "modules/mobile_store_ops",
+  "handler": "mobile_ops_handler.py",
+  "ui": {
+    "icon": "smartphone",
+    "color": "#00BCD4",
+    "sections": [
+      {
+        "name": "Floor Ops",
+        "components": [
+          { "title": "Product Scan", "type": "scanner", "intent": "mobile_product_lookup" },
+          { "title": "Quick Pick", "type": "list", "intent": "mobile_pick_order" }
+        ]
+      },
+      {
+        "name": "Tasks",
+        "components": [
+          { "title": "My Tasks", "type": "list", "intent": "mobile_list_tasks" },
+          { "title": "Stock Count", "type": "form", "intent": "mobile_cycle_count" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "mobile_product_lookup",
+      "description": "Rich details for scanned item",
+      "parameters": [
+        { "name": "barcode", "type": "string", "required": true, "description": "Scanned code" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Context" }
+      ]
+    },
+    {
+      "name": "mobile_pick_order",
+      "description": "Guided picking for online orders",
+      "parameters": [
+        { "name": "order_id", "type": "string", "required": true, "description": "Order to pick" },
+        { "name": "item_id", "type": "string", "required": true, "description": "Item picked" },
+        { "name": "bin_location", "type": "string", "required": true, "description": "Confirmation" }
+      ]
+    },
+    {
+      "name": "mobile_cycle_count",
+      "description": "Quick stock update from floor",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": true, "description": "Item" },
+        { "name": "counted_qty", "type": "number", "required": true, "description": "Actual qty" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Context" }
+      ]
+    },
+    {
+      "name": "mobile_list_tasks",
+      "description": "Shows assigned duties",
+      "parameters": [
+        { "name": "employee_id", "type": "string", "required": true, "description": "Staff ID" },
+        { "name": "status", "type": "string", "required": false, "description": "pending, in_progress" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "id": "ecommerce_integration",
+    "name": "Ecommerce Integration",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Ecommerce Integration module for Niyam retail system",
+    "tags": [
+      "module"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 8970,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "ecommerce_integration.created",
+        "version": "1",
+        "subject": "ecommerce.ecommerce.integration.created.v1"
+      },
+      {
+        "name": "ecommerce_integration.updated",
+        "version": "1",
+        "subject": "ecommerce.ecommerce.integration.updated.v1"
+      },
+      {
+        "name": "ecommerce.order.received",
+        "version": "1",
+        "subject": "ecommerce.order.received.v1",
+        "description": "Emitted when a new order is received via webhook from external platform"
+      },
+      {
+        "name": "ecommerce.order.synced",
+        "version": "1",
+        "subject": "ecommerce.order.synced.v1",
+        "description": "Emitted when order is successfully synced to local system"
+      },
+      {
+        "name": "ecommerce.inventory.synced",
+        "version": "1",
+        "subject": "ecommerce.inventory.synced.v1",
+        "description": "Emitted when inventory is auto-synced with external platform"
+      }
+    ],
+    "consumes": [
+      {
+        "name": "inventory.stock.changed",
+        "version": "1",
+        "subject": "inventory.stock.changed.v1",
+        "description": "Listens for stock changes to trigger auto-sync to web platforms"
+      }
+    ]
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "ecommerce_integration",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": [],
+  "integrations": {
+    "requires_external_api": true,
+    "external_services": ["shopify", "woocommerce", "custom_api"]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "name": "Compliance & Audit",
+  "version": "1.0.0",
+  "description": "Regulatory compliance, age verification, and tamper-proof audit logging.",
+  "module_path": "modules/compliance_audit",
+  "handler": "compliance_handler.py",
+  "ui": {
+    "icon": "gavel",
+    "color": "#607D8B",
+    "sections": [
+      {
+        "name": "Audit",
+        "components": [
+          { "title": "View Logs", "type": "table", "intent": "view_audit_logs" },
+          { "title": "Investigate Variance", "type": "form", "intent": "investigate_variance" }
+        ]
+      },
+      {
+        "name": "Regulations",
+        "components": [
+          { "title": "Age Checks", "type": "chart", "intent": "verify_age_compliance" },
+          { "title": "Hazmat Report", "type": "list", "intent": "track_hazmat" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "view_audit_logs",
+      "description": "Queries the immutable activity log",
+      "parameters": [
+        { "name": "entity_type", "type": "string", "required": false, "description": "transaction, inventory, user" },
+        { "name": "entity_id", "type": "string", "required": false, "description": "Specific ID" },
+        { "name": "date_range", "type": "object", "required": false, "description": "start/end" }
+      ]
+    },
+    {
+      "name": "verify_age_compliance",
+      "description": "Validates ID for restricted items",
+      "parameters": [
+        { "name": "transaction_id", "type": "string", "required": true, "description": "Transaction context" },
+        { "name": "dob", "type": "string", "required": true, "description": "Date of Birth" },
+        { "name": "id_type", "type": "string", "required": true, "description": "Driver License, Passport" }
+      ]
+    },
+    {
+      "name": "track_hazmat",
+      "description": "Manages dangerous goods storage/disposal",
+      "parameters": [
+        { "name": "location_id", "type": "string", "required": true, "description": "Site" },
+        { "name": "class", "type": "string", "required": false, "description": "Flammable, Corrosive" }
+      ]
+    },
+    {
+      "name": "investigate_variance",
+      "description": "Workflow for unexplained losses",
+      "parameters": [
+        { "name": "variance_id", "type": "string", "required": true, "description": "Incident ID" },
+        { "name": "notes", "type": "string", "required": true, "description": "Findings" },
+        { "name": "action", "type": "string", "required": true, "description": "resolve, escalate" }
+      ]
+    }
+  ]
+}

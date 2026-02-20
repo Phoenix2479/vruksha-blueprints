@@ -1,0 +1,16 @@
+{
+  "name": "@vruksha/multi_property",
+  "version": "1.0.0",
+  "description": "Multi-Property Management - Hotel Chains",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "nodemon service.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "prom-client": "^15.1.3"
+  }
+}

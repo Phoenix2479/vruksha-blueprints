@@ -1,0 +1,37 @@
+{
+  "id": "niyam_ecommerce",
+  "name": "Niyam E-commerce",
+  "version": "1.0.0",
+  "description": "E-commerce management modules covering storefront, operations, and analytics.",
+  "extends": "core_shared",
+  "modules": [
+    "product_catalog",
+    "shopping_cart",
+    "checkout_flow",
+    "order_processing",
+    "customer_accounts",
+    "payment_gateway",
+    "inventory_sync",
+    "shipping_integration",
+    "discount_coupons",
+    "abandoned_cart_recovery",
+    "product_reviews",
+    "sales_analytics"
+  ],
+  "category": "ecommerce",
+  "tags": [
+    "ecommerce",
+    "storefront",
+    "orders",
+    "payments",
+    "analytics"
+  ],
+  "benefits": [
+    "Complete online store management",
+    "Multi-channel inventory synchronization",
+    "Real-time sales analytics and insights"
+  ],
+  "bytes": 163084,
+  "checksum": "sha256:2e432d1f0dc90dddc4ae201cef77d50219d28b16050849a68641c6f1a66f8da4",
+  "icon": "/assets/icons/niyam_ecommerce.svg"
+}

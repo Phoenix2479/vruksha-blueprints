@@ -1,0 +1,9 @@
+name,sku,barcode,quantity,unit_price,category,description
+"Wireless Earbuds Pro",,,,1499,Electronics,"Bluetooth 5.0 earbuds with noise cancellation"
+"Cotton Polo Shirt",,,,899,Clothing,"Premium cotton polo in multiple colors"
+"Stainless Steel Tumbler",,,,599,Home & Kitchen,"Double-wall insulated 500ml tumbler"
+"Organic Green Tea 100g",TEA-GRN-001,8901234567890,50,249,Groceries,"Premium organic green tea leaves"
+"USB Type-C Cable 1m",ELEC-USB-001,,100,199,Electronics,"Fast charging USB-C to USB-C cable"
+"Hand Soap Refill 1L",,,,149,Personal Care,"Moisturizing liquid hand soap refill"
+"Notebook A4 200 pages",STAT-NB-001,,200,89,Stationery,"Ruled notebook with hard cover"
+"LED Bulb 9W Pack of 2",,,,199,Home & Kitchen,"Energy saving LED bulbs, warm white"

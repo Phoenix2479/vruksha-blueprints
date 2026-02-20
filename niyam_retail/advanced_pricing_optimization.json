@@ -1,0 +1,29 @@
+{
+  "module_name": "advanced_pricing_optimization",
+  "version": "1.0.0",
+  "description": "AI-driven dynamic pricing optimization for retail products",
+  "intents": [
+    "create_pricing_model",
+    "get_pricing_model_by_id",
+    "get_pricing_model_by_product",
+    "update_pricing_model",
+    "calculate_dynamic_price",
+    "get_price_history",
+    "get_price_history_for_model",
+    "create_optimization_rule",
+    "get_optimization_rule_by_id",
+    "get_all_optimization_rules",
+    "apply_optimization_rules",
+    "get_pricing_statistics",
+    "optimize_price"
+  ],
+  "dependencies": [
+    "pricing_engine",
+    "product_management"
+  ],
+  "data_files": [
+    "pricing_data.json"
+  ],
+  "author": "Vruksha AI Team",
+  "license": "MIT"
+}

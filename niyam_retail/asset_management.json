@@ -1,0 +1,262 @@
+{
+  "name": "Asset Management",
+  "version": "1.0.0",
+  "description": "Handles tracking store equipment, maintenance schedules, and asset lifecycle",
+  "module_path": "modules/asset_management",
+  "handler": "asset_managementhandler.py",
+  "intents": [
+    {
+      "name": "register_asset",
+      "description": "Registers a new asset",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the asset"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": true,
+          "description": "Category of the asset (equipment, furniture, vehicle, etc.)"
+        },
+        {
+          "name": "purchase_date",
+          "type": "string",
+          "required": true,
+          "description": "Purchase date (YYYY-MM-DD)"
+        },
+        {
+          "name": "purchase_cost",
+          "type": "number",
+          "required": true,
+          "description": "Purchase cost"
+        },
+        {
+          "name": "serial_number",
+          "type": "string",
+          "required": false,
+          "description": "Serial number"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "required": false,
+          "description": "Current location"
+        },
+        {
+          "name": "depreciation_rate",
+          "type": "number",
+          "required": false,
+          "description": "Annual depreciation rate (as decimal, e.g., 0.1 for 10%)"
+        },
+        {
+          "name": "warranty_expiry",
+          "type": "string",
+          "required": false,
+          "description": "Warranty expiry date (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "assign_asset",
+      "description": "Assigns an asset to a person or location",
+      "parameters": [
+        {
+          "name": "asset_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the asset"
+        },
+        {
+          "name": "assigned_to",
+          "type": "string",
+          "required": true,
+          "description": "Person or department assigned to"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "required": false,
+          "description": "New location of the asset"
+        }
+      ]
+    },
+    {
+      "name": "track_asset",
+      "description": "Tracks an asset",
+      "parameters": [
+        {
+          "name": "asset_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the asset"
+        }
+      ]
+    },
+    {
+      "name": "schedule_maintenance",
+      "description": "Schedules maintenance for an asset",
+      "parameters": [
+        {
+          "name": "asset_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the asset"
+        },
+        {
+          "name": "maintenance_type",
+          "type": "string",
+          "required": true,
+          "description": "Type of maintenance (preventive, corrective, etc.)"
+        },
+        {
+          "name": "scheduled_date",
+          "type": "string",
+          "required": true,
+          "description": "Scheduled date (YYYY-MM-DD)"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Description of maintenance"
+        },
+        {
+          "name": "assigned_to",
+          "type": "string",
+          "required": false,
+          "description": "Person assigned to perform maintenance"
+        }
+      ]
+    },
+    {
+      "name": "record_maintenance",
+      "description": "Records maintenance performed on an asset",
+      "parameters": [
+        {
+          "name": "maintenance_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the scheduled maintenance"
+        },
+        {
+          "name": "performed_by",
+          "type": "string",
+          "required": true,
+          "description": "Person who performed the maintenance"
+        },
+        {
+          "name": "actual_date",
+          "type": "string",
+          "required": true,
+          "description": "Actual date of maintenance (YYYY-MM-DD)"
+        },
+        {
+          "name": "notes",
+          "type": "string",
+          "required": false,
+          "description": "Notes about the maintenance"
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Cost of maintenance"
+        }
+      ]
+    },
+    {
+      "name": "dispose_asset",
+      "description": "Disposes of an asset",
+      "parameters": [
+        {
+          "name": "asset_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the asset"
+        },
+        {
+          "name": "disposal_date",
+          "type": "string",
+          "required": true,
+          "description": "Date of disposal (YYYY-MM-DD)"
+        },
+        {
+          "name": "disposal_method",
+          "type": "string",
+          "required": true,
+          "description": "Method of disposal (sold, scrapped, donated, etc.)"
+        },
+        {
+          "name": "disposal_value",
+          "type": "number",
+          "required": false,
+          "description": "Value received from disposal"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "inventory_2",
+    "color": "#795548",
+    "sections": [
+      {
+        "name": "Asset Registration",
+        "components": [
+          {
+            "type": "form",
+            "intent": "register_asset",
+            "title": "Register Asset"
+          }
+        ]
+      },
+      {
+        "name": "Asset Assignment",
+        "components": [
+          {
+            "type": "form",
+            "intent": "assign_asset",
+            "title": "Assign Asset"
+          }
+        ]
+      },
+      {
+        "name": "Asset Tracking",
+        "components": [
+          {
+            "type": "form",
+            "intent": "track_asset",
+            "title": "Track Asset"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "components": [
+          {
+            "type": "form",
+            "intent": "schedule_maintenance",
+            "title": "Schedule Maintenance"
+          },
+          {
+            "type": "form",
+            "intent": "record_maintenance",
+            "title": "Record Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Asset Disposal",
+        "components": [
+          {
+            "type": "form",
+            "intent": "dispose_asset",
+            "title": "Dispose Asset"
+          }
+        ]
+      }
+    ]
+  }
+}

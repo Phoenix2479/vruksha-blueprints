@@ -1,0 +1,140 @@
+{
+  "id": "email_client",
+  "name": "Email Client",
+  "version": "2.0.0",
+  "description": "Universal email management with AI assistance - supports Gmail, Outlook, IMAP/SMTP",
+  "category": "productivity",
+  "tags": ["email", "communication", "ai", "productivity", "universal", "retail", "business", "mail", "inbox", "messaging"],
+  "searchKeywords": ["email", "mail", "inbox", "gmail", "outlook", "messaging", "communication"],
+  "icon": "/assets/icons/email_client.svg",
+  "author": "Vruksha Team",
+  "license": "MIT",
+  "visibility": "public",
+  "universal": true,
+  "availableFor": ["niyam_retail", "niyam_hospitality", "niyam_education", "niyam_healthcare", "niyam_manufacturing"],
+  "runtime": {
+    "language": "node",
+    "version": ">=18.0.0",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:3950/remoteEntry.js"
+    },
+    "port": 8950,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://retail-nats:4222",
+      "DB_HOST": "retail-postgres",
+      "DB_NAME": "niyam_retail",
+      "DB_USER": "niyam",
+      "JWT_SECRET": "dev_secret_change_me",
+      "SKIP_AUTH": "true",
+      "ALLOW_ALL_CORS": "true"
+    }
+  },
+  "ui": {
+    "type": "react",
+    "framework": "vite",
+    "port": 3950,
+    "path": "./ui"
+  },
+  "database": {
+    "postgres": {
+      "required": true,
+      "tables": ["email_accounts", "email_messages", "email_settings"]
+    }
+  },
+  "apis": {
+    "basePath": "/api/email",
+    "endpoints": {
+      "health": "/health",
+      "accounts": {
+        "list": "/accounts",
+        "connect": "/accounts/connect",
+        "disconnect": "/accounts/:email",
+        "test": "/accounts/:email/test"
+      },
+      "messages": {
+        "list": "/messages",
+        "fetch": "/messages/fetch",
+        "get": "/messages/:id",
+        "send": "/messages/send",
+        "search": "/messages/search",
+        "delete": "/messages/:id"
+      },
+      "ai": {
+        "categorize": "/ai/categorize",
+        "smartReply": "/ai/smart-reply/:id",
+        "prioritize": "/ai/prioritize",
+        "summarize": "/ai/summarize/:id"
+      },
+      "settings": {
+        "get": "/settings",
+        "update": "/settings"
+      },
+      "stats": "/stats"
+    }
+  },
+  "features": {
+    "multiProvider": true,
+    "aiAssistance": true,
+    "smartCategorization": true,
+    "priorityInbox": true,
+    "smartReplies": true,
+    "search": true,
+    "localStorage": true,
+    "encryption": true
+  },
+  "providers": [
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "type": "oauth2",
+      "icon": "gmail.svg"
+    },
+    {
+      "id": "outlook",
+      "name": "Outlook",
+      "type": "oauth2",
+      "icon": "outlook.svg"
+    },
+    {
+      "id": "imap",
+      "name": "IMAP/SMTP",
+      "type": "credentials",
+      "icon": "email.svg"
+    }
+  ],
+  "permissions": [
+    "email:read",
+    "email:write",
+    "email:send",
+    "email:delete",
+    "network:access",
+    "storage:read",
+    "storage:write",
+    "ai:invoke"
+  ],
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7",
+    "imap": "^0.8.19",
+    "mailparser": "^3.6.5",
+    "googleapis": "^128.0.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "prom-client": "^15.1.0",
+    "zod": "^3.22.4"
+  },
+  "events": {
+    "publishes": [
+      "email.received",
+      "email.sent",
+      "email.deleted",
+      "account.connected",
+      "account.disconnected"
+    ],
+    "subscribes": []
+  }
+}

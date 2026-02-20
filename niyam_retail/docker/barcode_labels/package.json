@@ -1,0 +1,27 @@
+{
+  "name": "@vruksha/barcode-labels",
+  "version": "0.1.0",
+  "private": true,
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:ui\"",
+    "dev:backend": "nodemon service.js",
+    "dev:ui": "cd ui && npm run dev",
+    "build": "cd ui && npm run build",
+    "preview": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "@vruksha/platform": "file:../../../../platform",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "prom-client": "^15.1.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "concurrently": "^8.2.2"
+  }
+}

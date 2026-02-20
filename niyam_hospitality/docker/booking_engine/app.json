@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "id": "booking_engine",
+    "name": "Booking Engine",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Direct booking widget for hotel websites with rate display, availability calendar, promo codes, and payment integration.",
+    "tags": ["booking", "direct_booking", "ibe", "hotel", "reservations", "widget"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5290/remoteEntry.js"
+    },
+    "port": 8930,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4223"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "booking_engine.booking_created", "version": "1", "subject": "hospitality.booking_engine.booking_created.v1" },
+      { "name": "booking_engine.availability_checked", "version": "1", "subject": "hospitality.booking_engine.availability_checked.v1" },
+      { "name": "booking_engine.promo_applied", "version": "1", "subject": "hospitality.booking_engine.promo_applied.v1" }
+    ],
+    "consumes": [
+      { "name": "channel_manager.rate_updated", "version": "1", "subject": "hospitality.channel_manager.rate_updated.v1" }
+    ]
+  },
+  "ai": { "enabled": false },
+  "permissions": [
+    { "resource": "booking_engine", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "rates", "actions": ["read"] },
+    { "resource": "availability", "actions": ["read", "update"] }
+  ],
+  "config": {
+    "public": {
+      "defaultCurrency": "INR",
+      "minAdvanceBookingDays": 0,
+      "maxAdvanceBookingDays": 365
+    },
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL", "PAYMENT_GATEWAY_KEY"]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "channel_manager", "payment_gateway"]
+}

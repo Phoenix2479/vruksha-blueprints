@@ -1,0 +1,126 @@
+{
+  "name": "Point of Sale",
+  "version": "2.0.0",
+  "description": "Advanced POS with omni-tender support, split payments, offline mode, and staff management.",
+  "module_path": "modules/point_of_sale",
+  "handler": "point_of_sale_handler.py",
+  "ui": {
+    "icon": "point_of_sale",
+    "color": "#FF5722",
+    "sections": [
+      {
+        "name": "Checkout",
+        "components": [
+          { "title": "Quick Sale", "type": "form", "intent": "quick_sale" },
+          { "title": "Process Cart", "type": "form", "intent": "process_sale" },
+          { "title": "Split Payment", "type": "form", "intent": "process_split_payment" },
+          { "title": "Customer Lookup", "type": "search", "intent": "lookup_customer" }
+        ]
+      },
+      {
+        "name": "Orders",
+        "components": [
+          { "title": "Layaway/Hold", "type": "form", "intent": "create_layaway" },
+          { "title": "Retrieve Cart", "type": "list", "intent": "retrieve_cart" },
+          { "title": "Process Return", "type": "form", "intent": "process_return" }
+        ]
+      },
+      {
+        "name": "Management",
+        "components": [
+          { "title": "Till Management", "type": "dashboard", "intent": "manage_till" },
+          { "title": "Override Price", "type": "form", "intent": "override_price" },
+          { "title": "Issue Gift Card", "type": "form", "intent": "issue_gift_card" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "process_sale",
+      "description": "Processes a standard sale transaction",
+      "parameters": [
+        { "name": "items", "type": "array", "required": true, "description": "List of items (id, qty, price)" },
+        { "name": "customer_id", "type": "string", "required": false, "description": "Linked customer" },
+        { "name": "payment_method", "type": "string", "required": true, "description": "cash, card, split, gift_card" },
+        { "name": "discount_code", "type": "string", "required": false, "description": "Coupon code" },
+        { "name": "till_id", "type": "string", "required": true, "description": "Register ID" }
+      ]
+    },
+    {
+      "name": "process_split_payment",
+      "description": "Handles payment via multiple methods",
+      "parameters": [
+        { "name": "transaction_id", "type": "string", "required": true, "description": "Active transaction" },
+        { "name": "payments", "type": "array", "required": true, "description": "List of {method, amount}" }
+      ]
+    },
+    {
+      "name": "quick_sale",
+      "description": "Fast checkout for walk-in customers",
+      "parameters": [
+        { "name": "amount", "type": "number", "required": true, "description": "Total amount" },
+        { "name": "category", "type": "string", "required": false, "description": "General category (e.g. Grocery)" },
+        { "name": "payment_method", "type": "string", "required": true, "description": "Payment type" }
+      ]
+    },
+    {
+      "name": "create_layaway",
+      "description": "Puts items on hold with deposit",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer" },
+        { "name": "items", "type": "array", "required": true, "description": "Items to hold" },
+        { "name": "deposit_amount", "type": "number", "required": true, "description": "Initial payment" },
+        { "name": "duration_days", "type": "number", "required": false, "description": "Hold duration" }
+      ]
+    },
+    {
+      "name": "override_price",
+      "description": "Manager override for item price",
+      "parameters": [
+        { "name": "transaction_id", "type": "string", "required": true, "description": "Transaction context" },
+        { "name": "item_index", "type": "number", "required": true, "description": "Line item index" },
+        { "name": "new_price", "type": "number", "required": true, "description": "Manual price" },
+        { "name": "reason", "type": "string", "required": true, "description": "Audit reason (e.g. Damaged)" },
+        { "name": "auth_code", "type": "string", "required": true, "description": "Manager PIN/Code" }
+      ]
+    },
+    {
+      "name": "issue_gift_card",
+      "description": "Activates a new gift card",
+      "parameters": [
+        { "name": "card_number", "type": "string", "required": true, "description": "Card identifier" },
+        { "name": "amount", "type": "number", "required": true, "description": "Initial balance" },
+        { "name": "customer_email", "type": "string", "required": false, "description": "For digital receipt" }
+      ]
+    },
+    {
+      "name": "manage_till",
+      "description": "Cash drawer operations",
+      "parameters": [
+        { "name": "action", "type": "string", "required": true, "description": "open, close, drop, float" },
+        { "name": "till_id", "type": "string", "required": true, "description": "Till ID" },
+        { "name": "amount", "type": "number", "required": false, "description": "Cash amount involved" },
+        { "name": "notes", "type": "string", "required": false, "description": "Variance notes" }
+      ]
+    },
+    {
+      "name": "process_return",
+      "description": "Processes refund or exchange",
+      "parameters": [
+        { "name": "original_txn_id", "type": "string", "required": true, "description": "Original receipt" },
+        { "name": "items", "type": "array", "required": true, "description": "Items returning" },
+        { "name": "reason", "type": "string", "required": true, "description": "Return reason" },
+        { "name": "condition", "type": "string", "required": true, "description": "sellable, damaged" }
+      ]
+    },
+    {
+      "name": "merge_carts",
+      "description": "Combines multiple saved carts",
+      "parameters": [
+        { "name": "target_cart_id", "type": "string", "required": true, "description": "Primary cart" },
+        { "name": "source_cart_ids", "type": "array", "required": true, "description": "Carts to merge in" }
+      ]
+    }
+  ]
+}

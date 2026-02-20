@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "id": "group_reservations",
+    "name": "Group Reservations",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Group booking management with room blocks, rooming lists, group billing, allotments, and event coordination.",
+    "tags": ["group_booking", "rooming_list", "allotment", "mice", "corporate", "events"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5293/remoteEntry.js"
+    },
+    "port": 8933,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4223"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "group_reservations.block_created", "version": "1", "subject": "hospitality.group_reservations.block_created.v1" },
+      { "name": "group_reservations.rooming_list_updated", "version": "1", "subject": "hospitality.group_reservations.rooming_list_updated.v1" },
+      { "name": "group_reservations.cutoff_reached", "version": "1", "subject": "hospitality.group_reservations.cutoff_reached.v1" }
+    ],
+    "consumes": [
+      { "name": "event_banquet.event_created", "version": "1", "subject": "hospitality.event_banquet.event_created.v1" }
+    ]
+  },
+  "ai": { "enabled": false },
+  "permissions": [
+    { "resource": "group_reservations", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "room_blocks", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "rooming_lists", "actions": ["read", "write", "update"] }
+  ],
+  "config": {
+    "public": {
+      "defaultBlockHoldDays": 30,
+      "minGroupSize": 5,
+      "autoReleaseEnabled": true
+    },
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "billing_payments", "event_banquet"]
+}

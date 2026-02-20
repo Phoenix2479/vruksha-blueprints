@@ -1,0 +1,97 @@
+{
+  "id": "niyam_hospitality",
+  "name": "Niyam Hospitality Blueprint",
+  "version": "1.0.0",
+  "description": "Industrial-grade module suite for hotels, resorts, and restaurant groups spanning property, guest, and F&B operations.",
+  "categories": [
+    {
+      "name": "Core Operations",
+      "modules": [
+        "property_management",
+        "front_office",
+        "housekeeping_maintenance",
+        "billing_payments",
+        "inventory_procurement"
+      ]
+    },
+    {
+      "name": "Guest Experience & Services",
+      "modules": [
+        "guest_profiles_loyalty",
+        "concierge_services",
+        "room_service_dining",
+        "event_banquet",
+        "guest_experience_hub"
+      ]
+    },
+    {
+      "name": "Food & Beverage Operations",
+      "modules": [
+        "restaurant_pos",
+        "menu_recipe",
+        "kitchen_operations",
+        "kitchen_order_display",
+        "food_costing_nutrition",
+        "smart_inventory_tracker",
+        "fnb_analytics_insights",
+        "qsr_drivethrough_queue",
+        "beverage_tab_manager",
+        "supplier_compliance"
+      ]
+    },
+    {
+      "name": "Corporate & Chain Management",
+      "modules": [
+        "multi_property",
+        "workforce_scheduling",
+        "revenue_management",
+        "analytics_reporting",
+        "chain_governance",
+        "executive_control_center"
+      ]
+    },
+    {
+      "name": "Integrations & Compliance",
+      "modules": [
+        "channel_manager",
+        "payment_gateway",
+        "safety_security",
+        "compliance_audit",
+        "digital_id_processing",
+        "aggregator_order_gateway"
+      ]
+    },
+    {
+      "name": "Enhancements",
+      "modules": [
+        "smart_iot",
+        "facility_iot_control",
+        "hospitality_marketing",
+        "guest_feedback",
+        "sustainability_energy",
+        "cost_energy_optimizer",
+        "autonomous_ops_ai",
+        "digital_identity_access",
+        "edge_sync_hub",
+        "ai_concierge",
+        "internal_comms",
+        "staff_learning_portal",
+        "partner_integration_hub"
+      ]
+    }
+  ],
+  "created_at": "2025-10-11T16:39:38.057244+00:00",
+  "updated_at": "2025-10-11T17:27:43.000000+00:00",
+  "category": "other",
+  "tags": [
+    "other"
+  ],
+  "benefits": [
+    "Manage niyam hospitality blueprint operations",
+    "Improve efficiency",
+    "Track performance"
+  ],
+  "bytes": 180296,
+  "checksum": "sha256:e3665b2f1d04458fdbc91ee539435f5cc5ed8dfb8d98cbc1c105318e6fd33eda",
+  "icon": "/assets/icons/niyam_hospitality.svg"
+}

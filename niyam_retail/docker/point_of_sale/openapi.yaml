@@ -1,0 +1,554 @@
+openapi: 3.0.3
+info:
+  title: Point of Sale API
+  description: |
+    POS API for retail checkout operations. Supports sessions, transactions, 
+    returns, gift cards, cash management, and offline sync.
+  version: 1.0.0
+  contact:
+    name: Vruksha Support
+
+servers:
+  - url: http://localhost:8800
+    description: Development server
+
+tags:
+  - name: Sessions
+    description: POS session management
+  - name: Transactions
+    description: Sales transactions
+  - name: Returns
+    description: Return and refund processing
+  - name: Gift Cards
+    description: Gift card operations
+  - name: Cash
+    description: Cash management
+  - name: Products
+    description: Product lookup
+  - name: Offline
+    description: Offline sync operations
+
+paths:
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /sessions:
+    get:
+      tags: [Sessions]
+      summary: List active sessions
+      responses:
+        '200':
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Session'
+    
+    post:
+      tags: [Sessions]
+      summary: Open a new POS session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [register_id]
+              properties:
+                register_id:
+                  type: string
+                opening_cash:
+                  type: number
+                  default: 0
+                cashier_id:
+                  type: string
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  session:
+                    $ref: '#/components/schemas/Session'
+
+  /sessions/{id}:
+    get:
+      tags: [Sessions]
+      summary: Get session by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session details
+    
+    patch:
+      tags: [Sessions]
+      summary: Close session
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                closing_cash:
+                  type: number
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Session closed
+
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List transactions
+      parameters:
+        - name: session_id
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of transactions
+    
+    post:
+      tags: [Transactions]
+      summary: Create a transaction (checkout)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  transaction:
+                    $ref: '#/components/schemas/Transaction'
+                  receipt_number:
+                    type: string
+
+  /transactions/calculate:
+    post:
+      tags: [Transactions]
+      summary: Calculate transaction totals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      price:
+                        type: number
+                      quantity:
+                        type: integer
+                      tax_rate:
+                        type: number
+                      discount:
+                        type: number
+      responses:
+        '200':
+          description: Calculated totals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  subtotal:
+                    type: number
+                  tax_total:
+                    type: number
+                  discount_total:
+                    type: number
+                  total:
+                    type: number
+
+  /transactions/offline-sync:
+    post:
+      tags: [Offline]
+      summary: Sync offline transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offlineId:
+                  type: string
+                sessionId:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                payments:
+                  type: array
+                  items:
+                    type: object
+                createdAt:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Transaction synced
+
+  /returns:
+    post:
+      tags: [Returns]
+      summary: Process a return
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [original_transaction_id, items, reason]
+              properties:
+                original_transaction_id:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      item_id:
+                        type: string
+                      quantity:
+                        type: integer
+                reason:
+                  type: string
+                refund_method:
+                  type: string
+                  enum: [cash, card, store_credit]
+      responses:
+        '200':
+          description: Return processed
+
+  /returns/reasons:
+    get:
+      tags: [Returns]
+      summary: Get return reasons
+      responses:
+        '200':
+          description: List of return reasons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  reasons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        label:
+                          type: string
+
+  /gift-cards/{code}/balance:
+    get:
+      tags: [Gift Cards]
+      summary: Check gift card balance
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Gift card balance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  balance:
+                    type: number
+                  status:
+                    type: string
+        '404':
+          description: Gift card not found
+
+  /gift-cards:
+    post:
+      tags: [Gift Cards]
+      summary: Issue a gift card
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount:
+                  type: number
+                  minimum: 1
+                recipient_name:
+                  type: string
+                recipient_email:
+                  type: string
+      responses:
+        '201':
+          description: Gift card issued
+
+  /cash/sessions/{sessionId}/summary:
+    get:
+      tags: [Cash]
+      summary: Get cash summary for session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cash summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  opening_cash:
+                    type: number
+                  cash_sales:
+                    type: number
+                  cash_refunds:
+                    type: number
+                  expected_cash:
+                    type: number
+
+  /products:
+    get:
+      tags: [Products]
+      summary: Search products
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: barcode
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+
+components:
+  schemas:
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        register_id:
+          type: string
+        cashier_id:
+          type: string
+        status:
+          type: string
+          enum: [active, closed]
+        opening_cash:
+          type: number
+        closing_cash:
+          type: number
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        session_id:
+          type: string
+        receipt_number:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionItem'
+        subtotal:
+          type: number
+        tax_total:
+          type: number
+        discount_total:
+          type: number
+        total:
+          type: number
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        customer_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    TransactionItem:
+      type: object
+      properties:
+        product_id:
+          type: string
+        sku:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+        tax_rate:
+          type: number
+        discount:
+          type: number
+        line_total:
+          type: number
+
+    Payment:
+      type: object
+      properties:
+        method:
+          type: string
+          enum: [cash, card, upi, gift_card, store_credit]
+        amount:
+          type: number
+        reference:
+          type: string
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        sku:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        tax_rate:
+          type: number
+        barcode:
+          type: string
+        stock:
+          type: integer
+
+    CreateTransactionRequest:
+      type: object
+      required: [session_id, items, payments]
+      properties:
+        session_id:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            required: [product_id, quantity, price]
+            properties:
+              product_id:
+                type: string
+              sku:
+                type: string
+              name:
+                type: string
+              quantity:
+                type: integer
+                minimum: 1
+              price:
+                type: number
+              tax_rate:
+                type: number
+              discount:
+                type: number
+        payments:
+          type: array
+          items:
+            type: object
+            required: [method, amount]
+            properties:
+              method:
+                type: string
+              amount:
+                type: number
+              reference:
+                type: string
+        customer_id:
+          type: string
+        notes:
+          type: string

@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "id": "sales_analytics",
+    "name": "Sales Analytics",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Sales analytics, KPI dashboard, product performance, and trend analysis for Niyam e-commerce",
+    "tags": [
+      "ecommerce",
+      "analytics",
+      "dashboard",
+      "reporting",
+      "trends"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "ui/sales_analytics-remote"
+    },
+    "port": 9112,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [],
+    "consumes": [
+      {
+        "name": "order.created",
+        "version": "1",
+        "subject": "ecommerce.order.created.v1"
+      },
+      {
+        "name": "payment.captured",
+        "version": "1",
+        "subject": "ecommerce.payment.captured.v1"
+      }
+    ]
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "sales_analytics",
+      "actions": ["read"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

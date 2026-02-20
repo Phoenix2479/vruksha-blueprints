@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "id": "accounting_accounts_receivable",
+    "name": "Accounts Receivable",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Customer management, invoices, receipts, and AR aging reports",
+    "tags": [
+      "accounting",
+      "receivable",
+      "customers",
+      "invoices",
+      "receipts"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8857,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "local",
+    "produces": [
+      {
+        "name": "customer.created",
+        "version": "1",
+        "subject": "accounting.customer.created.v1"
+      },
+      {
+        "name": "invoice.created",
+        "version": "1",
+        "subject": "accounting.invoice.created.v1"
+      },
+      {
+        "name": "invoice.posted",
+        "version": "1",
+        "subject": "accounting.invoice.posted.v1"
+      },
+      {
+        "name": "receipt.created",
+        "version": "1",
+        "subject": "accounting.receipt.created.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_accounts_receivable",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": [
+    "accounting_chart_of_accounts",
+    "accounting_journal_entries",
+    "accounting_tax_engine"
+  ]
+}

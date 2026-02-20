@@ -1,0 +1,211 @@
+{
+  "name": "Quality Control",
+  "version": "1.0.0",
+  "description": "Handles product quality checks, compliance, and certifications",
+  "module_path": "modules/quality_control",
+  "handler": "quality_controlhandler.py",
+  "intents": [
+    {
+      "name": "create_quality_check",
+      "description": "Creates a new quality check",
+      "parameters": [
+        {
+          "name": "product_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the product"
+        },
+        {
+          "name": "check_type",
+          "type": "string",
+          "required": true,
+          "description": "Type of check (incoming, in_process, final)"
+        },
+        {
+          "name": "standards",
+          "type": "object",
+          "required": true,
+          "description": "Quality standards to check against"
+        },
+        {
+          "name": "required_tests",
+          "type": "array",
+          "required": false,
+          "description": "List of required tests"
+        }
+      ]
+    },
+    {
+      "name": "perform_quality_check",
+      "description": "Performs a quality check",
+      "parameters": [
+        {
+          "name": "check_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the quality check"
+        },
+        {
+          "name": "performed_by",
+          "type": "string",
+          "required": true,
+          "description": "Person performing the check"
+        }
+      ]
+    },
+    {
+      "name": "record_test_results",
+      "description": "Records test results for a quality check",
+      "parameters": [
+        {
+          "name": "check_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the quality check"
+        },
+        {
+          "name": "test_results",
+          "type": "array",
+          "required": true,
+          "description": "Array of test results"
+        },
+        {
+          "name": "compliance_status",
+          "type": "string",
+          "required": false,
+          "description": "Overall compliance status"
+        },
+        {
+          "name": "comments",
+          "type": "string",
+          "required": false,
+          "description": "Additional comments"
+        }
+      ]
+    },
+    {
+      "name": "generate_quality_report",
+      "description": "Generates a quality report",
+      "parameters": [
+        {
+          "name": "start_date",
+          "type": "string",
+          "required": false,
+          "description": "Start date for the report (YYYY-MM-DD)"
+        },
+        {
+          "name": "end_date",
+          "type": "string",
+          "required": false,
+          "description": "End date for the report (YYYY-MM-DD)"
+        }
+      ]
+    },
+    {
+      "name": "manage_certification",
+      "description": "Manages product certifications",
+      "parameters": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": "Action to perform (issue, revoke, renew)"
+        },
+        {
+          "name": "product_id",
+          "type": "string",
+          "required": false,
+          "description": "ID of the product (required for issue)"
+        },
+        {
+          "name": "certification_type",
+          "type": "string",
+          "required": false,
+          "description": "Type of certification (required for issue)"
+        },
+        {
+          "name": "issued_by",
+          "type": "string",
+          "required": false,
+          "description": "Entity issuing the certification (required for issue)"
+        },
+        {
+          "name": "certification_id",
+          "type": "string",
+          "required": false,
+          "description": "ID of the certification (required for revoke/renew)"
+        },
+        {
+          "name": "issued_date",
+          "type": "string",
+          "required": false,
+          "description": "Date of issuance (YYYY-MM-DD) (optional for issue)"
+        },
+        {
+          "name": "expiry_date",
+          "type": "string",
+          "required": false,
+          "description": "Expiration date (YYYY-MM-DD)"
+        },
+        {
+          "name": "new_expiry_date",
+          "type": "string",
+          "required": false,
+          "description": "New expiration date (YYYY-MM-DD) (required for renew)"
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Reason for revocation (optional for revoke)"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "verified",
+    "color": "#4CAF50",
+    "sections": [
+      {
+        "name": "Quality Checks",
+        "components": [
+          {
+            "type": "form",
+            "intent": "create_quality_check",
+            "title": "Create Quality Check"
+          },
+          {
+            "type": "form",
+            "intent": "perform_quality_check",
+            "title": "Perform Quality Check"
+          },
+          {
+            "type": "form",
+            "intent": "record_test_results",
+            "title": "Record Test Results"
+          }
+        ]
+      },
+      {
+        "name": "Reports",
+        "components": [
+          {
+            "type": "form",
+            "intent": "generate_quality_report",
+            "title": "Generate Quality Report"
+          }
+        ]
+      },
+      {
+        "name": "Certifications",
+        "components": [
+          {
+            "type": "form",
+            "intent": "manage_certification",
+            "title": "Manage Certification"
+          }
+        ]
+      }
+    ]
+  }
+}

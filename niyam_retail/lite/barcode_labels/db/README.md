@@ -1,0 +1,1 @@
+-- Placeholder for barcode_labels database

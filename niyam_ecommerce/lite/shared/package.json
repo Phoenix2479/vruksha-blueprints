@@ -1,0 +1,9 @@
+{
+  "name": "@niyam/ecommerce-lite-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for Niyam E-commerce Lite apps",
+  "main": "db.js",
+  "dependencies": {
+    "sql.js": "^1.13.0"
+  }
+}

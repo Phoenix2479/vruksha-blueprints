@@ -1,0 +1,182 @@
+{
+  "name": "Marketing Automation",
+  "version": "1.0.0",
+  "description": "Handles campaigns, promotions, and automated marketing workflows",
+  "module_path": "modules/marketing_automation",
+  "handler": "marketing_automationhandler.py",
+  "intents": [
+    {
+      "name": "create_campaign",
+      "description": "Creates a new marketing campaign",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the campaign"
+        },
+        {
+          "name": "target_audience",
+          "type": "object",
+          "required": true,
+          "description": "Target audience criteria"
+        },
+        {
+          "name": "channels",
+          "type": "array",
+          "required": true,
+          "description": "Marketing channels (email, sms, social_media, etc.)"
+        },
+        {
+          "name": "content",
+          "type": "object",
+          "required": false,
+          "description": "Campaign content for each channel"
+        },
+        {
+          "name": "budget",
+          "type": "number",
+          "required": false,
+          "description": "Campaign budget"
+        }
+      ]
+    },
+    {
+      "name": "schedule_campaign",
+      "description": "Schedules a marketing campaign",
+      "parameters": [
+        {
+          "name": "campaign_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the campaign"
+        },
+        {
+          "name": "schedule_time",
+          "type": "string",
+          "required": true,
+          "description": "Scheduled time (YYYY-MM-DD HH:MM:SS)"
+        }
+      ]
+    },
+    {
+      "name": "track_campaign",
+      "description": "Tracks a marketing campaign",
+      "parameters": [
+        {
+          "name": "campaign_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the campaign"
+        }
+      ]
+    },
+    {
+      "name": "create_promotion",
+      "description": "Creates a new promotion",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the promotion"
+        },
+        {
+          "name": "discount_type",
+          "type": "string",
+          "required": true,
+          "description": "Type of discount (percentage, fixed_amount)"
+        },
+        {
+          "name": "discount_value",
+          "type": "number",
+          "required": true,
+          "description": "Discount value"
+        },
+        {
+          "name": "applicable_products",
+          "type": "array",
+          "required": false,
+          "description": "Products the promotion applies to"
+        },
+        {
+          "name": "valid_from",
+          "type": "string",
+          "required": false,
+          "description": "Valid from date (YYYY-MM-DD)"
+        },
+        {
+          "name": "valid_to",
+          "type": "string",
+          "required": false,
+          "description": "Valid to date (YYYY-MM-DD)"
+        },
+        {
+          "name": "usage_limit",
+          "type": "number",
+          "required": false,
+          "description": "Maximum number of times the promotion can be used"
+        }
+      ]
+    },
+    {
+      "name": "apply_promotion",
+      "description": "Applies a promotion to a transaction",
+      "parameters": [
+        {
+          "name": "promotion_id",
+          "type": "string",
+          "required": true,
+          "description": "ID of the promotion"
+        },
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "description": "Array of items with product_id, price, and quantity"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "icon": "campaign",
+    "color": "#3F51B5",
+    "sections": [
+      {
+        "name": "Campaigns",
+        "components": [
+          {
+            "type": "form",
+            "intent": "create_campaign",
+            "title": "Create Campaign"
+          },
+          {
+            "type": "form",
+            "intent": "schedule_campaign",
+            "title": "Schedule Campaign"
+          },
+          {
+            "type": "form",
+            "intent": "track_campaign",
+            "title": "Track Campaign"
+          }
+        ]
+      },
+      {
+        "name": "Promotions",
+        "components": [
+          {
+            "type": "form",
+            "intent": "create_promotion",
+            "title": "Create Promotion"
+          },
+          {
+            "type": "form",
+            "intent": "apply_promotion",
+            "title": "Apply Promotion"
+          }
+        ]
+      }
+    ]
+  }
+}

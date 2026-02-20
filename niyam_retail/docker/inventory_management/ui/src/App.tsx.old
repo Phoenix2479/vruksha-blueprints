@@ -1,0 +1,833 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Package, Search, Plus, RefreshCw, AlertTriangle, Edit2,
+  Trash2, Box, TrendingUp, TrendingDown, ArrowUpDown,
+  CheckCircle, XCircle, Loader2, BarChart3, History
+} from 'lucide-react'
+import { productsApi, stockApi, healthApi } from '@/lib/api'
+import { formatCurrency, formatNumber, formatDateTime, cn } from '@/lib/utils'
+import type { Product, StockAdjustmentReason } from '@/types/inventory'
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'products' | 'adjustments' | 'analytics'>('products')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showAdjustModal, setShowAdjustModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [filterLowStock, setFilterLowStock] = useState(false)
+
+  const queryClient = useQueryClient()
+
+  // Queries
+  const { data: products = [], isLoading: productsLoading, refetch } = useQuery({
+    queryKey: ['products', searchQuery, filterLowStock],
+    queryFn: () => productsApi.list({ 
+      search: searchQuery || undefined,
+      low_stock: filterLowStock || undefined 
+    }),
+  })
+
+  const { data: health } = useQuery({
+    queryKey: ['health'],
+    queryFn: healthApi.status,
+    refetchInterval: 30000,
+  })
+
+  const { data: stats } = useQuery({
+    queryKey: ['stats'],
+    queryFn: healthApi.stats,
+  })
+
+  // Mutations
+  const createProduct = useMutation({
+    mutationFn: productsApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setShowAddModal(false)
+      setEditingProduct(null)
+    },
+  })
+
+  const updateProduct = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) => 
+      productsApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setShowAddModal(false)
+      setEditingProduct(null)
+    },
+  })
+
+  const deleteProduct = useMutation({
+    mutationFn: productsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    },
+  })
+
+  const adjustStock = useMutation({
+    mutationFn: stockApi.adjust,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      queryClient.invalidateQueries({ queryKey: ['stock-history'] })
+      setShowAdjustModal(false)
+      setSelectedProduct(null)
+    },
+  })
+
+  // Stats calculations
+  const totalProducts = products.length
+  const totalValue = products.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0)
+  const lowStockProducts = products.filter(p => p.quantity <= (p.reorder_level || 10))
+  const outOfStockProducts = products.filter(p => p.quantity === 0)
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Package className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">Inventory Management</h1>
+                <p className="text-sm text-gray-500">Stock tracking & management</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button onClick={() => refetch()} className="p-2 hover:bg-gray-100 rounded-lg">
+                <RefreshCw className="h-5 w-5 text-gray-500" />
+              </button>
+              <div className="flex items-center gap-2">
+                {health?.status === 'ok' ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+                <span className="text-sm text-gray-600">{health?.status || 'Checking...'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Stats Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <StatsCard
+            icon={<Box className="h-5 w-5" />}
+            label="Total Products"
+            value={formatNumber(totalProducts)}
+            color="blue"
+          />
+          <StatsCard
+            icon={<TrendingUp className="h-5 w-5" />}
+            label="Inventory Value"
+            value={formatCurrency(totalValue)}
+            color="green"
+          />
+          <StatsCard
+            icon={<AlertTriangle className="h-5 w-5" />}
+            label="Low Stock"
+            value={formatNumber(lowStockProducts.length)}
+            color="yellow"
+            onClick={() => setFilterLowStock(!filterLowStock)}
+            active={filterLowStock}
+          />
+          <StatsCard
+            icon={<TrendingDown className="h-5 w-5" />}
+            label="Out of Stock"
+            value={formatNumber(outOfStockProducts.length)}
+            color="red"
+          />
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <nav className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-8">
+            {[
+              { id: 'products', label: 'Products', icon: Package },
+              { id: 'adjustments', label: 'Stock Adjustments', icon: ArrowUpDown },
+              { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  'flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm',
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                )}
+              >
+                <tab.icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeTab === 'products' && (
+          <ProductsView
+            products={products}
+            isLoading={productsLoading}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onAdd={() => { setEditingProduct(null); setShowAddModal(true) }}
+            onEdit={(p) => { setEditingProduct(p); setShowAddModal(true) }}
+            onDelete={(id) => deleteProduct.mutate(id)}
+            onAdjust={(p) => { setSelectedProduct(p); setShowAdjustModal(true) }}
+          />
+        )}
+
+        {activeTab === 'adjustments' && (
+          <AdjustmentsView products={products} />
+        )}
+
+        {activeTab === 'analytics' && (
+          <AnalyticsView products={products} stats={stats} />
+        )}
+      </main>
+
+      {/* Add/Edit Product Modal */}
+      {showAddModal && (
+        <ProductModal
+          product={editingProduct}
+          onClose={() => { setShowAddModal(false); setEditingProduct(null) }}
+          onSave={(data) => {
+            if (editingProduct) {
+              updateProduct.mutate({ id: editingProduct.id, data })
+            } else {
+              createProduct.mutate(data)
+            }
+          }}
+          isLoading={createProduct.isPending || updateProduct.isPending}
+        />
+      )}
+
+      {/* Stock Adjustment Modal */}
+      {showAdjustModal && selectedProduct && (
+        <AdjustStockModal
+          product={selectedProduct}
+          onClose={() => { setShowAdjustModal(false); setSelectedProduct(null) }}
+          onSave={(data) => adjustStock.mutate(data)}
+          isLoading={adjustStock.isPending}
+        />
+      )}
+    </div>
+  )
+}
+
+// Stats Card Component
+function StatsCard({ 
+  icon, label, value, color, onClick, active 
+}: { 
+  icon: React.ReactNode
+  label: string
+  value: string
+  color: 'blue' | 'green' | 'yellow' | 'red'
+  onClick?: () => void
+  active?: boolean
+}) {
+  const colors = {
+    blue: 'bg-blue-50 text-blue-600',
+    green: 'bg-green-50 text-green-600',
+    yellow: 'bg-yellow-50 text-yellow-600',
+    red: 'bg-red-50 text-red-600',
+  }
+
+  return (
+    <div 
+      className={cn(
+        'bg-white rounded-xl shadow-sm border p-4 transition-all',
+        onClick && 'cursor-pointer hover:shadow-md',
+        active && 'ring-2 ring-blue-500'
+      )}
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-3">
+        <div className={cn('p-2 rounded-lg', colors[color])}>
+          {icon}
+        </div>
+        <div>
+          <p className="text-sm text-gray-500">{label}</p>
+          <p className="text-xl font-semibold">{value}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Products View
+function ProductsView({
+  products,
+  isLoading,
+  searchQuery,
+  setSearchQuery,
+  onAdd,
+  onEdit,
+  onDelete,
+  onAdjust,
+}: {
+  products: Product[]
+  isLoading: boolean
+  searchQuery: string
+  setSearchQuery: (q: string) => void
+  onAdd: () => void
+  onEdit: (p: Product) => void
+  onDelete: (id: string) => void
+  onAdjust: (p: Product) => void
+}) {
+  return (
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <button
+          onClick={onAdd}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4" />
+          Add Product
+        </button>
+      </div>
+
+      {/* Products Table */}
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        {isLoading ? (
+          <div className="p-8 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <Package className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>No products found</p>
+            <button onClick={onAdd} className="mt-2 text-blue-600 hover:underline">
+              Add your first product
+            </button>
+          </div>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {products.map((product) => (
+                <tr key={product.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="font-medium text-gray-900">{product.name}</p>
+                      {product.category_name && (
+                        <p className="text-sm text-gray-500">{product.category_name}</p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{product.sku}</td>
+                  <td className="px-6 py-4 text-right text-sm font-medium">
+                    {formatCurrency(product.unit_price)}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <span className={cn(
+                      'text-sm font-medium',
+                      product.quantity === 0 ? 'text-red-600' :
+                      product.quantity <= (product.reorder_level || 10) ? 'text-yellow-600' :
+                      'text-gray-900'
+                    )}>
+                      {formatNumber(product.quantity)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={cn(
+                      'px-2 py-1 text-xs font-medium rounded-full',
+                      product.quantity === 0 ? 'bg-red-100 text-red-700' :
+                      product.quantity <= (product.reorder_level || 10) ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-green-100 text-green-700'
+                    )}>
+                      {product.quantity === 0 ? 'Out of Stock' :
+                       product.quantity <= (product.reorder_level || 10) ? 'Low Stock' :
+                       'In Stock'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => onAdjust(product)}
+                        className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+                        title="Adjust Stock"
+                      >
+                        <ArrowUpDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => onEdit(product)}
+                        className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+                        title="Edit"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(product.id)}
+                        className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Adjustments View
+function AdjustmentsView({ products }: { products: Product[] }) {
+  const [selectedProductId, setSelectedProductId] = useState<string>('')
+
+  const { data: history = [], isLoading } = useQuery({
+    queryKey: ['stock-history', selectedProductId],
+    queryFn: () => selectedProductId ? stockApi.getHistory(selectedProductId) : Promise.resolve([]),
+    enabled: !!selectedProductId,
+  })
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl shadow-sm border p-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
+        <select
+          value={selectedProductId}
+          onChange={(e) => setSelectedProductId(e.target.value)}
+          className="w-full max-w-md px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Choose a product...</option>
+          {products.map((p) => (
+            <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+          ))}
+        </select>
+      </div>
+
+      {selectedProductId && (
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="px-6 py-4 border-b">
+            <h3 className="font-medium flex items-center gap-2">
+              <History className="h-4 w-4" />
+              Stock History
+            </h3>
+          </div>
+          {isLoading ? (
+            <div className="p-8 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : history.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No adjustment history</div>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reason</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Change</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">After</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {history.map((entry) => (
+                  <tr key={entry.id}>
+                    <td className="px-6 py-4 text-sm">{formatDateTime(entry.created_at)}</td>
+                    <td className="px-6 py-4 text-sm capitalize">{entry.reason.replace(/_/g, ' ')}</td>
+                    <td className={cn(
+                      'px-6 py-4 text-sm text-right font-medium',
+                      entry.quantity_change > 0 ? 'text-green-600' : 'text-red-600'
+                    )}>
+                      {entry.quantity_change > 0 ? '+' : ''}{entry.quantity_change}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-right">{entry.quantity_after}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{entry.notes || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Analytics View
+function AnalyticsView({ products, stats }: { products: Product[]; stats: any }) {
+  const topProducts = [...products]
+    .sort((a, b) => b.quantity * b.unit_price - a.quantity * a.unit_price)
+    .slice(0, 5)
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h3 className="font-medium mb-4">Top Products by Value</h3>
+          <div className="space-y-3">
+            {topProducts.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                    {i + 1}
+                  </span>
+                  <span className="font-medium">{p.name}</span>
+                </div>
+                <span className="text-gray-600">{formatCurrency(p.quantity * p.unit_price)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h3 className="font-medium mb-4">Inventory Summary</h3>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Total SKUs</span>
+              <span className="font-medium">{products.length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Total Units</span>
+              <span className="font-medium">{formatNumber(products.reduce((s, p) => s + p.quantity, 0))}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Avg. Price</span>
+              <span className="font-medium">
+                {formatCurrency(products.length ? products.reduce((s, p) => s + p.unit_price, 0) / products.length : 0)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Service Uptime</span>
+              <span className="font-medium">{stats?.uptime ? `${Math.round(stats.uptime / 60)}m` : '-'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Product Modal
+function ProductModal({
+  product,
+  onClose,
+  onSave,
+  isLoading,
+}: {
+  product: Product | null
+  onClose: () => void
+  onSave: (data: Partial<Product>) => void
+  isLoading: boolean
+}) {
+  const [formData, setFormData] = useState({
+    name: product?.name || '',
+    sku: product?.sku || '',
+    description: product?.description || '',
+    unit_price: product?.unit_price || 0,
+    cost_price: product?.cost_price || 0,
+    tax_rate: (product as any)?.tax_rate || 18, // Default 18% GST
+    quantity: product?.quantity || 0,
+    reorder_level: product?.reorder_level || 10,
+    location: product?.location || '',
+    barcode: product?.barcode || '',
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg m-4 max-h-[90vh] overflow-auto">
+        <div className="px-6 py-4 border-b flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {product ? 'Edit Product' : 'Add Product'}
+          </h2>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+            <XCircle className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">SKU *</label>
+              <input
+                type="text"
+                required
+                value={formData.sku}
+                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
+              <input
+                type="text"
+                value={formData.barcode}
+                onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price *</label>
+              <input
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                value={formData.unit_price}
+                onChange={(e) => setFormData({ ...formData, unit_price: parseFloat(e.target.value) })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Cost Price</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.cost_price}
+                onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                value={formData.tax_rate}
+                onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 18 for GST"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Initial Quantity</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                disabled={!!product}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reorder Level</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.reorder_level}
+                onChange={(e) => setFormData({ ...formData, reorder_level: parseInt(e.target.value) })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., Warehouse A, Shelf 3"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                rows={3}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            >
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {product ? 'Update' : 'Create'} Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// Stock Adjustment Modal
+function AdjustStockModal({
+  product,
+  onClose,
+  onSave,
+  isLoading,
+}: {
+  product: Product
+  onClose: () => void
+  onSave: (data: { product_id: string; quantity_change: number; reason: string; notes?: string }) => void
+  isLoading: boolean
+}) {
+  const [formData, setFormData] = useState({
+    quantity_change: 0,
+    reason: 'correction' as StockAdjustmentReason,
+    notes: '',
+  })
+
+  const reasons: { value: StockAdjustmentReason; label: string }[] = [
+    { value: 'purchase', label: 'Purchase / Receiving' },
+    { value: 'sale', label: 'Sale' },
+    { value: 'return', label: 'Customer Return' },
+    { value: 'damage', label: 'Damaged Goods' },
+    { value: 'theft', label: 'Theft / Loss' },
+    { value: 'correction', label: 'Inventory Correction' },
+    { value: 'transfer_in', label: 'Transfer In' },
+    { value: 'transfer_out', label: 'Transfer Out' },
+    { value: 'expired', label: 'Expired' },
+  ]
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave({
+      product_id: product.id,
+      ...formData,
+    })
+  }
+
+  const newQuantity = product.quantity + formData.quantity_change
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md m-4">
+        <div className="px-6 py-4 border-b flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Adjust Stock</h2>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+            <XCircle className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="font-medium">{product.name}</p>
+            <p className="text-sm text-gray-500">SKU: {product.sku}</p>
+            <p className="text-sm text-gray-500">Current Stock: {formatNumber(product.quantity)}</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Reason *</label>
+            <select
+              required
+              value={formData.reason}
+              onChange={(e) => setFormData({ ...formData, reason: e.target.value as StockAdjustmentReason })}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              {reasons.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity Change *</label>
+            <input
+              type="number"
+              required
+              value={formData.quantity_change}
+              onChange={(e) => setFormData({ ...formData, quantity_change: parseInt(e.target.value) || 0 })}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., +10 or -5"
+            />
+            <p className={cn(
+              'text-sm mt-1',
+              newQuantity < 0 ? 'text-red-600' : 'text-gray-500'
+            )}>
+              New quantity will be: {formatNumber(newQuantity)}
+              {newQuantity < 0 && ' (Warning: Negative stock!)'}
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows={2}
+              placeholder="Optional notes..."
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading || formData.quantity_change === 0}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            >
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Apply Adjustment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}

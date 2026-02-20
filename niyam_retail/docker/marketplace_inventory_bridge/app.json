@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "id": "marketplace_inventory_bridge",
+    "name": "Marketplace Inventory Bridge",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Synchronises catalog and inventory signals across third-party marketplaces with conflict resolution.",
+    "tags": [
+      "marketplace",
+      "integration",
+      "inventory"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5337/remoteEntry.js"
+    },
+    "port": 8957,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "marketplace_inventory_bridge.created",
+        "version": "1",
+        "subject": "marketplace.marketplace.inventory.bridge.created.v1"
+      },
+      {
+        "name": "marketplace_inventory_bridge.updated",
+        "version": "1",
+        "subject": "marketplace.marketplace.inventory.bridge.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "marketplace_inventory_bridge",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

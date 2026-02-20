@@ -1,0 +1,15 @@
+{
+  "name": "@niyam/lite-accounting_general_ledger",
+  "version": "1.0.0",
+  "description": "Niyam Max Lite - accounting general ledger",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "node --watch service.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "module_name": "multi_store_management",
+  "version": "1.0.0",
+  "description": "Management of multiple store locations with centralized control",
+  "intents": [
+    "create_store_group",
+    "add_store_to_group",
+    "remove_store_from_group",
+    "get_group_by_id",
+    "get_all_groups",
+    "set_store_hierarchy",
+    "get_store_children",
+    "get_store_parent",
+    "consolidate_reports",
+    "get_consolidated_reports",
+    "get_consolidated_report_by_id",
+    "apply_policy_to_stores",
+    "get_policy_applications",
+    "get_multi_store_statistics"
+  ],
+  "dependencies": [
+    "store_management"
+  ],
+  "data_files": [
+    "multi_store_data.json"
+  ],
+  "author": "Vruksha AI Team",
+  "license": "MIT"
+}

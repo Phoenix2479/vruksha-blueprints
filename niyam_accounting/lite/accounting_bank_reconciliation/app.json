@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "id": "accounting_bank_reconciliation",
+    "name": "Bank Reconciliation",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Bank account management, transaction import, matching, and reconciliation",
+    "tags": [
+      "accounting",
+      "bank",
+      "reconciliation",
+      "transactions"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8854,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "local",
+    "produces": [
+      {
+        "name": "bank_account.created",
+        "version": "1",
+        "subject": "accounting.bank_account.created.v1"
+      },
+      {
+        "name": "bank_account.updated",
+        "version": "1",
+        "subject": "accounting.bank_account.updated.v1"
+      },
+      {
+        "name": "bank_transaction.created",
+        "version": "1",
+        "subject": "accounting.bank_transaction.created.v1"
+      },
+      {
+        "name": "reconciliation.completed",
+        "version": "1",
+        "subject": "accounting.reconciliation.completed.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_bank_reconciliation",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

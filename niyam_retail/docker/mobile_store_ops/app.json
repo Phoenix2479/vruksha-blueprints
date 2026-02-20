@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "id": "mobile_store_ops",
+    "name": "Mobile Store Ops",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "mobile_store_ops app for Niyam",
+    "tags": []
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "server.js",
+      "ui": "ui/mobile_store_ops-remote"
+    },
+    "port": 8849,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/api/mobile-store-ops"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "mobile_store_ops.created",
+        "version": "1",
+        "subject": "mobile.mobile.store.ops.created.v1"
+      },
+      {
+        "name": "mobile_store_ops.updated",
+        "version": "1",
+        "subject": "mobile.mobile.store.ops.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "mobile_store_ops",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

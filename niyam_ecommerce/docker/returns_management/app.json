@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "id": "returns_management",
+    "name": "Returns Management",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Return requests, refund processing, and exchange management for e-commerce",
+    "tags": ["ecommerce", "returns", "refunds", "exchanges", "rma"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 9113,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "return.created",
+        "version": "1",
+        "subject": "ecommerce.return.created.v1"
+      },
+      {
+        "name": "return.approved",
+        "version": "1",
+        "subject": "ecommerce.return.approved.v1"
+      },
+      {
+        "name": "return.completed",
+        "version": "1",
+        "subject": "ecommerce.return.completed.v1"
+      }
+    ],
+    "consumes": [
+      {
+        "name": "order.refunded",
+        "version": "1",
+        "subject": "ecommerce.order.refunded.v1"
+      }
+    ]
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "returns_management",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": ["order_processing", "inventory_sync"]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@niyam/qr-code-generator-docker",
+  "version": "1.0.0",
+  "private": true,
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "node --watch service.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "nats": "^2.29.3",
+    "node-fetch": "^2.7.0",
+    "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.3",
+    "sharp": "^0.33.0",
+    "uuid": "^9.0.0"
+  }
+}

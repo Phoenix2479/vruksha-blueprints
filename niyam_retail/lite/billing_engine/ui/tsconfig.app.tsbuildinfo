@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/api/billing.ts","./src/components/invoiceform.tsx","./src/components/invoicelist.tsx","./src/components/paymentform.tsx","./src/pages/billing.tsx","./src/pages/billingmainpage.tsx","./src/pages/billingpage.tsx"],"errors":true,"version":"5.9.3"}

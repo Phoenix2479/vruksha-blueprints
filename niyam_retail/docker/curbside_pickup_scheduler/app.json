@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "id": "curbside_pickup_scheduler",
+    "name": "Curbside Pickup Scheduler",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Manages curbside slots, arrival check-ins, and runner dispatch for click-and-collect orders.",
+    "tags": [
+      "curbside",
+      "pickup",
+      "last-mile"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5328/remoteEntry.js"
+    },
+    "port": 8948,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "curbside_pickup_scheduler.created",
+        "version": "1",
+        "subject": "curbside.curbside.pickup.scheduler.created.v1"
+      },
+      {
+        "name": "curbside_pickup_scheduler.updated",
+        "version": "1",
+        "subject": "curbside.curbside.pickup.scheduler.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "curbside_pickup_scheduler",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

@@ -1,0 +1,74 @@
+{
+  "business_name": "niyam_ecommerce",
+  "display_name": "Niyam E-commerce",
+  "description": "Complete e-commerce suite covering storefront, operations, payments, marketing, customer experience, and analytics",
+  "version": "1.0.0",
+  "modules": [
+    "product_catalog",
+    "shopping_cart",
+    "checkout_flow",
+    "order_processing",
+    "customer_accounts",
+    "payment_gateway",
+    "inventory_sync",
+    "shipping_integration",
+    "discount_coupons",
+    "abandoned_cart_recovery",
+    "product_reviews",
+    "sales_analytics",
+    "returns_management"
+  ],
+  "tags": [
+    "ecommerce",
+    "storefront",
+    "cart",
+    "checkout",
+    "orders",
+    "payments",
+    "shipping",
+    "inventory",
+    "coupons",
+    "reviews",
+    "analytics",
+    "marketing",
+    "customer",
+    "returns",
+    "refunds"
+  ],
+  "integrations": [
+    "niyam_retail",
+    "niyam_accounting"
+  ],
+  "ports": {
+    "docker": {
+      "product_catalog": 9101,
+      "shopping_cart": 9102,
+      "checkout_flow": 9103,
+      "order_processing": 9104,
+      "customer_accounts": 9105,
+      "payment_gateway": 9106,
+      "inventory_sync": 9107,
+      "shipping_integration": 9108,
+      "discount_coupons": 9109,
+      "abandoned_cart_recovery": 9110,
+      "product_reviews": 9111,
+      "sales_analytics": 9112,
+      "returns_management": 9113
+    },
+    "lite": {
+      "product_catalog": 9151,
+      "shopping_cart": 9152,
+      "checkout_flow": 9153,
+      "order_processing": 9154,
+      "customer_accounts": 9155,
+      "payment_gateway": 9156,
+      "inventory_sync": 9157,
+      "shipping_integration": 9158,
+      "discount_coupons": 9159,
+      "abandoned_cart_recovery": 9160,
+      "product_reviews": 9161,
+      "sales_analytics": 9162,
+      "returns_management": 9163
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "id": "invoice_service_rust",
+    "name": "Invoice Service (Rust)",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Rust service emitting invoice.created events via NATS",
+    "tags": []
+  },
+  "runtime": {
+    "language": "rust",
+    "entrypoints": {
+      "service": "rust/target/debug/invoice-service",
+      "ui": "http://localhost:5174/remoteEntry.js"
+    },
+    "port": 8895,
+    "env": {}
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/invoice"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "invoice.created",
+        "version": "1",
+        "subject": "billing.invoice.created.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "invoice_service_rust",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": []
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

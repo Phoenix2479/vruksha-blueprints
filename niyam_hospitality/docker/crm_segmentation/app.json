@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "id": "crm_segmentation",
+    "name": "CRM & Segmentation",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Guest CRM with segmentation, automated campaigns, lifecycle tracking, lead management, and personalization engine.",
+    "tags": ["crm", "segmentation", "marketing", "campaigns", "leads", "personalization"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5294/remoteEntry.js"
+    },
+    "port": 8934,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4223"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "crm.segment_updated", "version": "1", "subject": "hospitality.crm.segment_updated.v1" },
+      { "name": "crm.campaign_triggered", "version": "1", "subject": "hospitality.crm.campaign_triggered.v1" },
+      { "name": "crm.lead_converted", "version": "1", "subject": "hospitality.crm.lead_converted.v1" }
+    ],
+    "consumes": [
+      { "name": "front_office.checked_out", "version": "1", "subject": "hospitality.front_office.checked_out.v1" },
+      { "name": "guest_feedback.review_submitted", "version": "1", "subject": "hospitality.guest_feedback.review_submitted.v1" },
+      { "name": "billing_payments.payment_completed", "version": "1", "subject": "hospitality.billing_payments.payment_completed.v1" }
+    ]
+  },
+  "ai": { "enabled": true, "gateway": "vruksha-ai-gateway", "intents": ["predict_churn", "recommend_offer", "segment_guest"] },
+  "permissions": [
+    { "resource": "crm", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "segments", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "campaigns", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "leads", "actions": ["read", "write", "update", "delete"] }
+  ],
+  "config": {
+    "public": {
+      "defaultSegments": ["vip", "corporate", "leisure", "repeat", "new", "at_risk"],
+      "autoSegmentationEnabled": true
+    },
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL", "AI_API_KEY"]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["guest_profiles_loyalty", "guest_messaging", "analytics_reporting"]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@niyam/accounting-docker-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for Niyam Accounting Docker apps",
+  "main": "index.js",
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}

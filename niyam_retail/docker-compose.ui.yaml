@@ -1,0 +1,165 @@
+# =============================================================================
+# Docker Compose for Niyam Retail UI Apps
+# =============================================================================
+# This file defines all 4 UI applications as Docker services.
+#
+# Usage:
+#   # Build all UI apps
+#   docker compose -f docker-compose.ui.yaml build
+#
+#   # Start all UI apps
+#   docker compose -f docker-compose.ui.yaml up -d
+#
+#   # Build and start a specific app
+#   docker compose -f docker-compose.ui.yaml up -d inventory-management-ui
+#
+#   # View logs
+#   docker compose -f docker-compose.ui.yaml logs -f
+#
+#   # Stop all
+#   docker compose -f docker-compose.ui.yaml down
+#
+# Environment Variables:
+#   You can override backend hosts using environment variables:
+#   INVENTORY_BACKEND_HOST=my-backend docker compose -f docker-compose.ui.yaml up -d
+# =============================================================================
+
+name: niyam-retail-ui
+
+services:
+  # ---------------------------------------------------------------------------
+  # Inventory Management UI
+  # Dev Port: 3005, Backend: 8811
+  # ---------------------------------------------------------------------------
+  inventory-management-ui:
+    build:
+      context: ../..
+      dockerfile: blueprints/niyam_retail/apps/Dockerfile.ui.template
+      args:
+        APP_NAME: inventory_management
+        BACKEND_PORT: 8811
+        UI_PORT: 80
+    image: niyam-retail/inventory-management-ui:latest
+    container_name: inventory-management-ui
+    ports:
+      - "3005:80"
+    environment:
+      - BACKEND_HOST=${INVENTORY_BACKEND_HOST:-host.docker.internal}
+      - BACKEND_PORT=${INVENTORY_BACKEND_PORT:-8811}
+      - UI_PORT=80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "app=niyam-retail"
+      - "component=inventory-management-ui"
+    networks:
+      - niyam-retail-network
+
+  # ---------------------------------------------------------------------------
+  # E-commerce Integration UI
+  # Dev Port: 5332, Backend: 8970
+  # ---------------------------------------------------------------------------
+  ecommerce-integration-ui:
+    build:
+      context: ../..
+      dockerfile: blueprints/niyam_retail/apps/Dockerfile.ui.template
+      args:
+        APP_NAME: ecommerce_integration
+        BACKEND_PORT: 8970
+        UI_PORT: 80
+    image: niyam-retail/ecommerce-integration-ui:latest
+    container_name: ecommerce-integration-ui
+    ports:
+      - "5332:80"
+    environment:
+      - BACKEND_HOST=${ECOMMERCE_BACKEND_HOST:-host.docker.internal}
+      - BACKEND_PORT=${ECOMMERCE_BACKEND_PORT:-8970}
+      - UI_PORT=80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "app=niyam-retail"
+      - "component=ecommerce-integration-ui"
+    networks:
+      - niyam-retail-network
+
+  # ---------------------------------------------------------------------------
+  # Barcode Labels UI
+  # Dev Port: 10052, Backend: 8880
+  # ---------------------------------------------------------------------------
+  barcode-labels-ui:
+    build:
+      context: ../..
+      dockerfile: blueprints/niyam_retail/apps/Dockerfile.ui.template
+      args:
+        APP_NAME: barcode_labels
+        BACKEND_PORT: 8880
+        UI_PORT: 80
+    image: niyam-retail/barcode-labels-ui:latest
+    container_name: barcode-labels-ui
+    ports:
+      - "10052:80"
+    environment:
+      - BACKEND_HOST=${BARCODE_BACKEND_HOST:-host.docker.internal}
+      - BACKEND_PORT=${BARCODE_BACKEND_PORT:-8880}
+      - UI_PORT=80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "app=niyam-retail"
+      - "component=barcode-labels-ui"
+    networks:
+      - niyam-retail-network
+
+  # ---------------------------------------------------------------------------
+  # Point of Sale UI
+  # Dev Port: 3003, Backend: 8815
+  # ---------------------------------------------------------------------------
+  point-of-sale-ui:
+    build:
+      context: ../..
+      dockerfile: blueprints/niyam_retail/apps/Dockerfile.ui.template
+      args:
+        APP_NAME: point_of_sale
+        BACKEND_PORT: 8815
+        UI_PORT: 80
+    image: niyam-retail/point-of-sale-ui:latest
+    container_name: point-of-sale-ui
+    ports:
+      - "3003:80"
+    environment:
+      - BACKEND_HOST=${POS_BACKEND_HOST:-host.docker.internal}
+      - BACKEND_PORT=${POS_BACKEND_PORT:-8815}
+      - UI_PORT=80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "app=niyam-retail"
+      - "component=point-of-sale-ui"
+    networks:
+      - niyam-retail-network
+
+networks:
+  niyam-retail-network:
+    driver: bridge
+    name: niyam-retail-network

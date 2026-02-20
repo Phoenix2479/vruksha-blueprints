@@ -1,0 +1,9 @@
+{
+  "name": "@niyam/lite-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for Niyam Max Lite apps",
+  "main": "db.js",
+  "dependencies": {
+    "sql.js": "^1.13.0"
+  }
+}

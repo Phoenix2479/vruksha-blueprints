@@ -1,0 +1,10 @@
+{
+  "name": "@vruksha/accounting_expense_claims",
+  "version": "1.0.0",
+  "description": "Niyam Accounting - Expense Claims (Docker/Postgres)",
+  "main": "service.js",
+  "scripts": { "start": "node service.js", "dev": "nodemon service.js" },
+  "dependencies": { "@vruksha/platform": "file:../../../../platform", "express": "^4.18.2", "cors": "^2.8.5", "helmet": "^7.1.0", "zod": "^3.22.4" },
+  "devDependencies": { "nodemon": "^3.0.2" },
+  "engines": { "node": ">=18.0.0" }
+}

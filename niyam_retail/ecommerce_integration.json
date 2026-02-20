@@ -1,0 +1,145 @@
+{
+  "name": "E-commerce Bridge",
+  "version": "1.2.0",
+  "description": "Synchronize products, inventory, and orders between physical stores and any online platform - Shopify, WooCommerce, or custom self-hosted websites with auto-sync and webhook support.",
+  "module_path": "modules/ecommerce_integration",
+  "handler": "ecommerce_bridge_handler.py",
+  "ui": {
+    "icon": "shopping_cart_checkout",
+    "color": "#9C27B0",
+    "sections": [
+      {
+        "name": "Platform Setup",
+        "components": [
+          { "title": "Connect Platform", "type": "form", "intent": "connect_platform" },
+          { "title": "Custom API Setup", "type": "form", "intent": "configure_custom_api" },
+          { "title": "Connected Channels", "type": "table", "intent": "list_channels" }
+        ]
+      },
+      {
+        "name": "Auto Sync",
+        "components": [
+          { "title": "Auto Sync Settings", "type": "form", "intent": "configure_auto_sync" },
+          { "title": "Webhook Setup", "type": "form", "intent": "register_webhook" },
+          { "title": "Sync Status", "type": "dashboard", "intent": "get_auto_sync_status" }
+        ]
+      },
+      {
+        "name": "Sync Control",
+        "components": [
+          { "title": "Sync Products", "type": "form", "intent": "sync_catalog" },
+          { "title": "Sync Inventory", "type": "form", "intent": "sync_inventory" },
+          { "title": "Mapping Status", "type": "dashboard", "intent": "check_sync_status" }
+        ]
+      },
+      {
+        "name": "Orders",
+        "components": [
+          { "title": "Import Orders", "type": "form", "intent": "import_online_orders" },
+          { "title": "Fulfillment Routing", "type": "form", "intent": "route_fulfillment" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "connect_platform",
+      "description": "Connect a new e-commerce platform (Shopify, WooCommerce, or Custom)",
+      "parameters": [
+        { "name": "channel_id", "type": "string", "required": true, "description": "Unique identifier for this channel (e.g., my_shopify_store)" },
+        { "name": "platform", "type": "string", "required": true, "description": "Platform type: shopify, woocommerce, or custom" },
+        { "name": "shop_url", "type": "string", "required": true, "description": "Store URL (e.g., mystore.myshopify.com or https://mywebsite.com)" },
+        { "name": "api_key", "type": "string", "required": true, "description": "API key or consumer key" },
+        { "name": "api_secret", "type": "string", "required": false, "description": "API secret or consumer secret (for Shopify/WooCommerce)" },
+        { "name": "display_name", "type": "string", "required": false, "description": "Friendly name for the channel" }
+      ]
+    },
+    {
+      "name": "configure_custom_api",
+      "description": "Configure a custom/self-hosted website API for order sync",
+      "parameters": [
+        { "name": "channel_id", "type": "string", "required": true, "description": "Unique identifier for this channel" },
+        { "name": "api_url", "type": "string", "required": true, "description": "Base URL of your website API (e.g., https://mysite.com/api)" },
+        { "name": "api_key", "type": "string", "required": false, "description": "API key for authentication" },
+        { "name": "auth_type", "type": "string", "required": false, "description": "Authentication type: bearer, basic, api_key_header, api_key_query" },
+        { "name": "orders_endpoint", "type": "string", "required": false, "description": "Endpoint path for fetching orders (default: /orders)" },
+        { "name": "date_param_name", "type": "string", "required": false, "description": "Query parameter name for filtering by date (default: since)" },
+        { "name": "response_path", "type": "string", "required": false, "description": "Path to orders array in response (e.g., data.orders)" },
+        { "name": "field_mapping", "type": "object", "required": false, "description": "Map your API fields to standard fields (id, email, total, items, etc.)" }
+      ]
+    },
+    {
+      "name": "list_channels",
+      "description": "List all connected e-commerce channels and their status",
+      "parameters": []
+    },
+    {
+      "name": "configure_auto_sync",
+      "description": "Configure automatic synchronization settings for a channel",
+      "parameters": [
+        { "name": "channel_id", "type": "string", "required": true, "description": "Channel identifier (e.g., shopify_main)" },
+        { "name": "auto_sync_orders", "type": "boolean", "required": true, "description": "Enable automatic order import" },
+        { "name": "auto_sync_inventory", "type": "boolean", "required": true, "description": "Enable automatic inventory sync" },
+        { "name": "auto_sync_products", "type": "boolean", "required": false, "description": "Enable automatic product sync" },
+        { "name": "sync_interval_minutes", "type": "number", "required": false, "description": "Polling interval in minutes (default: 5)" },
+        { "name": "use_webhooks", "type": "boolean", "required": false, "description": "Use webhooks instead of polling (recommended)" }
+      ]
+    },
+    {
+      "name": "register_webhook",
+      "description": "Register webhook endpoints with external platform for real-time notifications",
+      "parameters": [
+        { "name": "platform", "type": "string", "required": true, "description": "shopify, woocommerce, amazon, etc." },
+        { "name": "channel_id", "type": "string", "required": true, "description": "Channel identifier" },
+        { "name": "webhook_types", "type": "array", "required": true, "description": "Types to register: orders/create, orders/updated, inventory/levels" },
+        { "name": "api_key", "type": "string", "required": false, "description": "Platform API key for webhook registration" },
+        { "name": "api_secret", "type": "string", "required": false, "description": "Platform API secret" }
+      ]
+    },
+    {
+      "name": "get_auto_sync_status",
+      "description": "Get current auto-sync configuration and real-time sync statistics",
+      "parameters": [
+        { "name": "channel_id", "type": "string", "required": false, "description": "Filter by specific channel" }
+      ]
+    },
+    {
+      "name": "sync_catalog",
+      "description": "Pushes product data to external platforms",
+      "parameters": [
+        { "name": "platform", "type": "string", "required": true, "description": "shopify, woocommerce, etc." },
+        { "name": "direction", "type": "string", "required": true, "description": "push_to_web, pull_from_web" },
+        { "name": "update_images", "type": "boolean", "required": false, "description": "Sync media files" }
+      ]
+    },
+    {
+      "name": "sync_inventory",
+      "description": "Real-time stock level synchronization",
+      "parameters": [
+        { "name": "location_map", "type": "object", "required": false, "description": "Map Store ID to Web Location ID" },
+        { "name": "force_full_sync", "type": "boolean", "required": false, "description": "Ignore dirty flags" }
+      ]
+    },
+    {
+      "name": "import_online_orders",
+      "description": "Downloads new orders from web",
+      "parameters": [
+        { "name": "since_date", "type": "string", "required": false, "description": "ISO Date" },
+        { "name": "status", "type": "string", "required": false, "description": "paid, unfulfilled" }
+      ]
+    },
+    {
+      "name": "route_fulfillment",
+      "description": "Decides where to fulfill an online order from",
+      "parameters": [
+        { "name": "order_id", "type": "string", "required": true, "description": "Web Order ID" },
+        { "name": "strategy", "type": "string", "required": true, "description": "closest_store, warehouse, split" }
+      ]
+    },
+    {
+      "name": "check_sync_status",
+      "description": "Reports on sync health and errors",
+      "parameters": []
+    }
+  ]
+}

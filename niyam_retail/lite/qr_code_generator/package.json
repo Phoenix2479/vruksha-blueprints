@@ -1,0 +1,19 @@
+{
+  "name": "@niyam/qr-code-generator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "node --watch service.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.3",
+    "sharp": "^0.33.0",
+    "uuid": "^9.0.0"
+  }
+}

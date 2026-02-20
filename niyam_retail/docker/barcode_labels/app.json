@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "id": "barcode_labels",
+    "name": "Barcode & Label Designer",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Design, customize, and print barcode labels for products with template management",
+    "tags": ["labels", "barcode", "printing", "retail"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:10052"
+    },
+    "port": 8880,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "barcode_labels.template_created",
+        "version": "1",
+        "subject": "labels.template.created.v1"
+      },
+      {
+        "name": "barcode_labels.template_updated",
+        "version": "1",
+        "subject": "labels.template.updated.v1"
+      },
+      {
+        "name": "barcode_labels.print_job_logged",
+        "version": "1",
+        "subject": "labels.print_job.logged.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "barcode_labels",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": ["product_catalog"]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@vruksha/authentication",
+  "version": "1.0.0",
+  "description": "User auth, MFA, RBAC, session management",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "nodemon service.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "zod": "^3.22.0",
+    "pg": "^8.11.0",
+    "nats": "^2.29.3",
+    "uuid": "^8.3.2",
+    "@vruksha/platform": "file:../../../../platform"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@vruksha/ecommerce_integration",
+  "version": "1.0.0",
+  "description": "Synchronize products, inventory, and orders between physical stores and online platforms.",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:ui\"",
+    "dev:backend": "nodemon service.js",
+    "dev:ui": "cd ui && npm run dev",
+    "build": "cd ui && npm run build",
+    "preview": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "pg": "^8.11.0",
+    "nats": "^2.29.3",
+    "prom-client": "^15.1.3",
+    "zod": "^3.23.8",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^8.3.2",
+    "axios": "^1.6.0",
+    "ws": "^8.16.0",
+    "@vruksha/platform": "file:../../../../platform"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "concurrently": "^8.2.2"
+  }
+}

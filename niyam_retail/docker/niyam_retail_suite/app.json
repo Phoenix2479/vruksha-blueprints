@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "id": "niyam_retail_suite",
+    "name": "Niyam Retail Suite",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Suite App aggregating retail micro-apps",
+    "tags": []
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "server.js",
+      "ui": "http://localhost:5175/remoteEntry.js"
+    },
+    "port": 8838,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/retail"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "niyam_retail_suite.created",
+        "version": "1",
+        "subject": "niyam.niyam.retail.suite.created.v1"
+      },
+      {
+        "name": "niyam_retail_suite.updated",
+        "version": "1",
+        "subject": "niyam.niyam.retail.suite.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "niyam_retail_suite",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {
+      "feature_flag": true
+    },
+    "secrets": []
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": [
+    {
+      "id": "billing_adapter",
+      "version": ">=0.1.0 <1"
+    }
+  ]
+}

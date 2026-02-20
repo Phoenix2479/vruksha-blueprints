@@ -1,0 +1,84 @@
+{
+  "name": "Procurement",
+  "version": "1.0.0",
+  "description": "Manage suppliers, purchase orders, receiving, and landed cost calculations.",
+  "module_path": "modules/procurement",
+  "handler": "procurement_handler.py",
+  "ui": {
+    "icon": "local_shipping",
+    "color": "#795548",
+    "sections": [
+      {
+        "name": "Purchasing",
+        "components": [
+          { "title": "Create PO", "type": "form", "intent": "create_po" },
+          { "title": "Supplier Catalog", "type": "list", "intent": "list_supplier_products" },
+          { "title": "Smart Reorder", "type": "dashboard", "intent": "generate_smart_orders" }
+        ]
+      },
+      {
+        "name": "Receiving",
+        "components": [
+          { "title": "Receive Goods", "type": "form", "intent": "receive_shipment" },
+          { "title": "Inspect Quality", "type": "form", "intent": "inspect_quality" }
+        ]
+      },
+      {
+        "name": "Suppliers",
+        "components": [
+          { "title": "Supplier Scorecard", "type": "dashboard", "intent": "rate_supplier" },
+          { "title": "Cost Analysis", "type": "chart", "intent": "calculate_landed_cost" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "create_po",
+      "description": "Creates a Purchase Order",
+      "parameters": [
+        { "name": "supplier_id", "type": "string", "required": true, "description": "Vendor ID" },
+        { "name": "items", "type": "array", "required": true, "description": "Products and quantities" },
+        { "name": "expected_date", "type": "string", "required": false, "description": "Required delivery date" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Ship-to location" }
+      ]
+    },
+    {
+      "name": "receive_shipment",
+      "description": "Records receipt of goods against a PO",
+      "parameters": [
+        { "name": "po_id", "type": "string", "required": true, "description": "Purchase Order ID" },
+        { "name": "items_received", "type": "array", "required": true, "description": "Qty received vs ordered" },
+        { "name": "packing_slip", "type": "string", "required": false, "description": "Vendor document ref" }
+      ]
+    },
+    {
+      "name": "calculate_landed_cost",
+      "description": "Computes total cost per unit including freight/duty",
+      "parameters": [
+        { "name": "po_id", "type": "string", "required": true, "description": "Purchase Order ID" },
+        { "name": "freight_cost", "type": "number", "required": true, "description": "Shipping fees" },
+        { "name": "duties", "type": "number", "required": true, "description": "Customs/Taxes" },
+        { "name": "handling", "type": "number", "required": false, "description": "Other fees" }
+      ]
+    },
+    {
+      "name": "rate_supplier",
+      "description": "Updates supplier performance metrics",
+      "parameters": [
+        { "name": "supplier_id", "type": "string", "required": true, "description": "Vendor ID" },
+        { "name": "po_id", "type": "string", "required": true, "description": "Context PO" },
+        { "name": "on_time_rating", "type": "number", "required": true, "description": "1-5 score" },
+        { "name": "quality_rating", "type": "number", "required": true, "description": "1-5 score" }
+      ]
+    },
+    {
+      "name": "generate_smart_orders",
+      "description": "Suggests POs based on forecast and reorder points",
+      "parameters": [
+        { "name": "category_id", "type": "string", "required": false, "description": "Filter category" },
+        { "name": "horizon_days", "type": "number", "required": false, "description": "Planning period" }
+      ]
+    }
+  ]
+}

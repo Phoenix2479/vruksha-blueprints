@@ -1,0 +1,109 @@
+# ============================================================================
+# Dockerfile Template for Niyam Retail UI Apps
+# ============================================================================
+# This is a reusable multi-stage Dockerfile for React/TypeScript/Vite apps.
+#
+# Build Args:
+#   - APP_NAME: The app directory name (e.g., inventory_management)
+#   - BACKEND_HOST: Backend service hostname (default: host.docker.internal)
+#   - BACKEND_PORT: Backend service port for API proxying
+#   - UI_PORT: Port to expose the UI (default: 80)
+#
+# Usage:
+#   docker build \
+#     --build-arg APP_NAME=inventory_management \
+#     --build-arg BACKEND_PORT=8811 \
+#     -f Dockerfile.ui.template \
+#     -t niyam-inventory-ui .
+#
+# ============================================================================
+
+# -----------------------------------------------------------------------------
+# Stage 1: Build Stage
+# -----------------------------------------------------------------------------
+# NOTE: Build context should be vruksha_server root (not apps/) to include shared library
+# Example: docker build -f blueprints/niyam_retail/apps/Dockerfile.ui.template \
+#          --build-arg APP_NAME=inventory_management ...
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS builder
+
+# Build arguments
+ARG APP_NAME
+ARG NODE_ENV=production
+
+# Validate required build arg
+RUN if [ -z "$APP_NAME" ]; then echo "ERROR: APP_NAME build arg is required" && exit 1; fi
+
+WORKDIR /app
+
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
+# Copy shared library first (for caching)
+# Shared library is at vruksha_server/shared/
+# Path from apps/{APP}/ui/:
+#   ../../../shared = blueprints/niyam_retail/shared/
+# So we place shared at blueprints/niyam_retail/shared/ to match the path alias
+COPY shared/ ./blueprints/niyam_retail/shared/
+
+# Install shared library dependencies (including devDependencies for types)
+WORKDIR /app/blueprints/niyam_retail/shared
+ENV NODE_ENV=development
+RUN npm ci 2>/dev/null || npm install
+
+# Copy app-specific package files
+# Apps are at blueprints/niyam_retail/apps/{APP_NAME}/ui/
+WORKDIR /app/blueprints/niyam_retail/apps/${APP_NAME}/ui
+COPY blueprints/niyam_retail/apps/${APP_NAME}/ui/package*.json ./
+
+# Install ALL dependencies including devDependencies (needed for build)
+# Set NODE_ENV to development to ensure devDependencies are installed
+ENV NODE_ENV=development
+RUN npm ci 2>/dev/null || npm install
+
+# Copy the rest of the app source
+COPY blueprints/niyam_retail/apps/${APP_NAME}/ui/ ./
+
+# Build the app (typescript and vite are devDependencies)
+RUN npm run build
+
+# -----------------------------------------------------------------------------
+# Stage 2: Production Stage
+# -----------------------------------------------------------------------------
+FROM nginx:1.25-alpine AS production
+
+# Build arguments for runtime configuration
+ARG APP_NAME
+ARG BACKEND_HOST=host.docker.internal
+ARG BACKEND_PORT=8080
+ARG UI_PORT=80
+
+# Environment variables for runtime
+ENV BACKEND_HOST=${BACKEND_HOST}
+ENV BACKEND_PORT=${BACKEND_PORT}
+ENV UI_PORT=${UI_PORT}
+
+# Install envsubst for runtime config templating
+RUN apk add --no-cache gettext
+
+# Remove default nginx static files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built assets from builder stage
+COPY --from=builder /app/blueprints/niyam_retail/apps/${APP_NAME}/ui/dist /usr/share/nginx/html
+
+# Copy nginx config template
+COPY blueprints/niyam_retail/apps/nginx.conf.template /etc/nginx/templates/default.conf.template
+
+# Create healthcheck script
+RUN printf '#!/bin/sh\nwget --no-verbose --tries=1 --spider http://localhost:${UI_PORT}/ || exit 1\n' > /healthcheck.sh && chmod +x /healthcheck.sh
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /healthcheck.sh
+
+# Expose port
+EXPOSE ${UI_PORT}
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

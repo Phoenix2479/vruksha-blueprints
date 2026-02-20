@@ -1,0 +1,30 @@
+{
+  "module_name": "competitor_analysis",
+  "version": "1.0.0",
+  "description": "Market intelligence and pricing strategies for competitor analysis",
+  "intents": [
+    "add_competitor",
+    "get_competitor_by_id",
+    "get_all_competitors",
+    "update_competitor",
+    "remove_competitor",
+    "record_price_intelligence",
+    "get_price_intelligence_by_competitor",
+    "get_price_intelligence_by_product",
+    "get_all_price_intelligence",
+    "analyze_competitor_pricing",
+    "record_market_analysis",
+    "get_market_analysis_by_type",
+    "get_all_market_analysis",
+    "generate_competitor_report",
+    "get_competitor_statistics"
+  ],
+  "dependencies": [
+    "product_management"
+  ],
+  "data_files": [
+    "competitor_data.json"
+  ],
+  "author": "Vruksha AI Team",
+  "license": "MIT"
+}

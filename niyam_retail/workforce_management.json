@@ -1,0 +1,85 @@
+{
+  "name": "Workforce Management",
+  "version": "1.0.0",
+  "description": "Staff scheduling, time tracking, performance metrics, and commission management.",
+  "module_path": "modules/workforce_management",
+  "handler": "workforce_handler.py",
+  "ui": {
+    "icon": "badge",
+    "color": "#607D8B",
+    "sections": [
+      {
+        "name": "Staff",
+        "components": [
+          { "title": "Employee List", "type": "list", "intent": "list_employees" },
+          { "title": "Permissions", "type": "form", "intent": "manage_permissions" }
+        ]
+      },
+      {
+        "name": "Scheduling",
+        "components": [
+          { "title": "Shift Calendar", "type": "calendar", "intent": "manage_shifts" },
+          { "title": "Time Clock", "type": "form", "intent": "log_time" }
+        ]
+      },
+      {
+        "name": "Performance",
+        "components": [
+          { "title": "Sales Goals", "type": "chart", "intent": "track_performance" },
+          { "title": "Commissions", "type": "table", "intent": "calculate_commission" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "manage_shifts",
+      "description": "Creates or modifies work schedules",
+      "parameters": [
+        { "name": "employee_id", "type": "string", "required": true, "description": "Staff ID" },
+        { "name": "start_time", "type": "string", "required": true, "description": "ISO Date" },
+        { "name": "end_time", "type": "string", "required": true, "description": "ISO Date" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Store ID" }
+      ]
+    },
+    {
+      "name": "log_time",
+      "description": "Clock in/out",
+      "parameters": [
+        { "name": "employee_id", "type": "string", "required": true, "description": "Staff ID" },
+        { "name": "action", "type": "string", "required": true, "description": "clock_in, clock_out, break_start, break_end" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Store ID" }
+      ]
+    },
+    {
+      "name": "calculate_commission",
+      "description": "Computes payouts based on sales",
+      "parameters": [
+        { "name": "employee_id", "type": "string", "required": true, "description": "Staff ID" },
+        { "name": "period_start", "type": "string", "required": true, "description": "Start Date" },
+        { "name": "period_end", "type": "string", "required": true, "description": "End Date" }
+      ]
+    },
+    {
+      "name": "track_performance",
+      "description": "Reports sales vs targets",
+      "parameters": [
+        { "name": "employee_id", "type": "string", "required": false, "description": "Specific staff or all" },
+        { "name": "metric", "type": "string", "required": true, "description": "revenue, items_per_ticket, conversion" }
+      ]
+    },
+    {
+      "name": "manage_permissions",
+      "description": "Sets access levels",
+      "parameters": [
+        { "name": "role_id", "type": "string", "required": true, "description": "Role to modify" },
+        { "name": "capabilities", "type": "array", "required": true, "description": "Allowed actions" }
+      ]
+    },
+    {
+      "name": "list_employees",
+      "description": "Lists staff members",
+      "parameters": []
+    }
+  ]
+}

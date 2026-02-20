@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "id": "inventory_management",
+    "name": "Inventory Management",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Inventory Management module for Niyam retail system",
+    "tags": [
+      "inventory",
+      "stock",
+      "products",
+      "tracking"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "ui/inventory_management-remote"
+    },
+    "port": 8811,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "inventory_management.created",
+        "version": "1",
+        "subject": "inventory.inventory.management.created.v1"
+      },
+      {
+        "name": "inventory_management.updated",
+        "version": "1",
+        "subject": "inventory.inventory.management.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": true,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [
+      "extract_inventory_document",
+      "parse_supplier_invoice",
+      "detect_product_variants"
+    ],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000,
+      "visionEnabled": true,
+      "ocrFallback": true
+    }
+  },
+  "permissions": [
+    {
+      "resource": "inventory_management",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

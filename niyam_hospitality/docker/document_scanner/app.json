@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "document_scanner",
+    "name": "Document Scanner",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "ID/passport scanning with OCR, digital registration cards, document verification, and compliance storage.",
+    "tags": ["ocr", "document_scanning", "id_verification", "passport", "compliance"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": { "service": "service.js" },
+    "port": 8939,
+    "env": { "NATS_URL": "nats://127.0.0.1:4223" }
+  },
+  "ai": { "enabled": true, "gateway": "vruksha-ai-gateway", "intents": ["extract_id_data", "verify_document"] },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "document_scanner.scanned", "version": "1", "subject": "hospitality.document_scanner.scanned.v1" },
+      { "name": "document_scanner.verified", "version": "1", "subject": "hospitality.document_scanner.verified.v1" }
+    ]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["self_checkin_kiosk", "front_office"]
+}

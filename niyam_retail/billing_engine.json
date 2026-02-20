@@ -1,0 +1,95 @@
+{
+  "name": "Billing Engine",
+  "version": "2.0.0",
+  "description": "Enterprise billing with recurring invoices, multi-currency, tax rules, and automated reconciliation.",
+  "module_path": "modules/billing_engine",
+  "handler": "billing_handler.py",
+  "ui": {
+    "icon": "receipt_long",
+    "color": "#4CAF50",
+    "sections": [
+      {
+        "name": "Invoicing",
+        "components": [
+          { "title": "New Invoice", "type": "form", "intent": "generate_invoice" },
+          { "title": "Recurring Billing", "type": "form", "intent": "generate_recurring_invoice" },
+          { "title": "Consolidate Invoices", "type": "form", "intent": "consolidate_invoices" }
+        ]
+      },
+      {
+        "name": "Accounts Receivable",
+        "components": [
+          { "title": "Process Payment", "type": "form", "intent": "process_payment" },
+          { "title": "Check Credit", "type": "form", "intent": "check_credit_limit" },
+          { "title": "Reconcile Bank", "type": "dashboard", "intent": "reconcile_payment" }
+        ]
+      },
+      {
+        "name": "Tax & Reports",
+        "components": [
+          { "title": "Tax Report", "type": "chart", "intent": "generate_tax_report" },
+          { "title": "Aging Report", "type": "chart", "intent": "generate_aging_report" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "generate_invoice",
+      "description": "Creates a standard sales invoice",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "items", "type": "array", "required": true, "description": "Line items" },
+        { "name": "currency", "type": "string", "required": false, "description": "ISO code (USD, INR)" },
+        { "name": "due_date", "type": "string", "required": false, "description": "YYYY-MM-DD" },
+        { "name": "tax_rules", "type": "object", "required": false, "description": "Override tax logic" }
+      ]
+    },
+    {
+      "name": "generate_recurring_invoice",
+      "description": "Sets up subscription/recurring billing",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "items", "type": "array", "required": true, "description": "Service items" },
+        { "name": "frequency", "type": "string", "required": true, "description": "monthly, quarterly, annual" },
+        { "name": "start_date", "type": "string", "required": true, "description": "Start date" },
+        { "name": "end_date", "type": "string", "required": false, "description": "End date or null" }
+      ]
+    },
+    {
+      "name": "consolidate_invoices",
+      "description": "Combines multiple pending orders into one invoice",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "order_ids", "type": "array", "required": true, "description": "List of orders" },
+        { "name": "period", "type": "string", "required": false, "description": "Billing cycle" }
+      ]
+    },
+    {
+      "name": "check_credit_limit",
+      "description": "Validates if customer can purchase on credit",
+      "parameters": [
+        { "name": "customer_id", "type": "string", "required": true, "description": "Customer ID" },
+        { "name": "amount", "type": "number", "required": true, "description": "Transaction amount" }
+      ]
+    },
+    {
+      "name": "process_payment",
+      "description": "Records payment against invoice(s)",
+      "parameters": [
+        { "name": "invoice_ids", "type": "array", "required": true, "description": "Target invoices" },
+        { "name": "amount", "type": "number", "required": true, "description": "Total paid" },
+        { "name": "method", "type": "string", "required": true, "description": "Payment mode" },
+        { "name": "reference", "type": "string", "required": false, "description": "Cheque/Transaction # " }
+      ]
+    },
+    {
+      "name": "reconcile_payment",
+      "description": "Matches bank transactions to invoices",
+      "parameters": [
+        { "name": "statement_id", "type": "string", "required": true, "description": "Bank statement ref" },
+        { "name": "auto_match", "type": "boolean", "required": false, "description": "Attempt auto-matching" }
+      ]
+    }
+  ]
+}

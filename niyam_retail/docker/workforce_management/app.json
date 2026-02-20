@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "id": "workforce_management",
+    "name": "Workforce Management",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "workforce_management app for Niyam",
+    "tags": []
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "server.js",
+      "ui": "ui/workforce_management-remote"
+    },
+    "port": 8897,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/api/workforce-management"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "workforce_management.created",
+        "version": "1",
+        "subject": "workforce.workforce.management.created.v1"
+      },
+      {
+        "name": "workforce_management.updated",
+        "version": "1",
+        "subject": "workforce.workforce.management.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "workforce_management",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

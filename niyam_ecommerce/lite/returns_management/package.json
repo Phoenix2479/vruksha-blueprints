@@ -1,0 +1,14 @@
+{
+  "name": "@vruksha/returns_management-lite",
+  "version": "1.0.0",
+  "description": "Returns management for e-commerce (lite/SQLite)",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "uuid": "^8.3.2"
+  }
+}

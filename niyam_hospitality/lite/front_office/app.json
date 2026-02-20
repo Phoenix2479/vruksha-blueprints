@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "id": "front_office",
+    "name": "Front Office",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Front office management for hospitality - reservations, check-in/out, arrivals, departures",
+    "tags": [
+      "hospitality",
+      "front-office",
+      "reservations",
+      "check-in"
+    ],
+    "vertical": "hospitality"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 8911,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "front_office.reservation_created",
+        "version": "1",
+        "subject": "hospitality.front_office.reservation.created.v1"
+      },
+      {
+        "name": "front_office.checkin_completed",
+        "version": "1",
+        "subject": "hospitality.front_office.checkin.completed.v1"
+      },
+      {
+        "name": "front_office.checkout_completed",
+        "version": "1",
+        "subject": "hospitality.front_office.checkout.completed.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "reservations",
+      "actions": ["read", "write", "update", "delete"]
+    },
+    {
+      "resource": "rooms",
+      "actions": ["read", "write", "update"]
+    },
+    {
+      "resource": "guests",
+      "actions": ["read", "write", "update"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/health",
+    "readiness": "/health"
+  },
+  "depends_on": []
+}

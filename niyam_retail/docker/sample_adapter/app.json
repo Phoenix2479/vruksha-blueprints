@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "id": "sample_adapter",
+    "name": "Billing (Legacy) Adapter",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Adapter exposing legacy billing module via HTTP",
+    "tags": []
+  },
+  "runtime": {
+    "language": "python",
+    "entrypoints": {
+      "service": "platform/compat/legacy_adapter.py",
+      "ui": "ui/sample_adapter-remote"
+    },
+    "port": 8883,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/billing-adapter"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "invoice.created",
+        "version": "1",
+        "subject": "billing.invoice.created.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "payments",
+      "actions": [
+        "charge",
+        "refund"
+      ]
+    }
+  ],
+  "config": {
+    "public": {
+      "feature_flag": true
+    },
+    "secrets": [
+      "PAYMENT_API_KEY"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

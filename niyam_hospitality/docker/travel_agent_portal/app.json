@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "id": "travel_agent_portal",
+    "name": "Travel Agent Portal",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "B2B portal for travel agents and corporate accounts with commission tracking, special rates, and bulk booking.",
+    "tags": ["travel_agent", "corporate", "b2b", "commission", "bulk_booking"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": { "service": "service.js" },
+    "port": 8936,
+    "env": { "NATS_URL": "nats://127.0.0.1:4223" }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "travel_agent.booking_created", "version": "1", "subject": "hospitality.travel_agent.booking_created.v1" },
+      { "name": "travel_agent.commission_calculated", "version": "1", "subject": "hospitality.travel_agent.commission_calculated.v1" }
+    ]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "billing_payments", "rate_manager"]
+}

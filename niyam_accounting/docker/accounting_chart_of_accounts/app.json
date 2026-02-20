@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "id": "accounting_chart_of_accounts",
+    "name": "Chart of Accounts",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Account hierarchy, types, trial balance, and chart management with India compliance",
+    "tags": [
+      "accounting",
+      "chart-of-accounts",
+      "trial-balance",
+      "india"
+    ],
+    "vertical": "accounting"
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js"
+    },
+    "port": 8841,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "account_type.created",
+        "version": "1",
+        "subject": "accounting.chart_of_accounts.account_type.created.v1"
+      },
+      {
+        "name": "account.created",
+        "version": "1",
+        "subject": "accounting.chart_of_accounts.account.created.v1"
+      },
+      {
+        "name": "account.updated",
+        "version": "1",
+        "subject": "accounting.chart_of_accounts.account.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "accounting_chart_of_accounts",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

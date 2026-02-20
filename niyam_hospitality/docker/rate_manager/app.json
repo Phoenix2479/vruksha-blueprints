@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "rate_manager",
+    "name": "Rate Manager",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Dynamic rate management with BAR rates, packages, promotions, seasonal pricing, competitor tracking, and yield management.",
+    "tags": ["rates", "pricing", "packages", "promotions", "yield_management", "revenue"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": { "service": "service.js" },
+    "port": 8935,
+    "env": { "NATS_URL": "nats://127.0.0.1:4223" }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "rate_manager.rate_updated", "version": "1", "subject": "hospitality.rate_manager.rate_updated.v1" },
+      { "name": "rate_manager.package_created", "version": "1", "subject": "hospitality.rate_manager.package_created.v1" }
+    ],
+    "consumes": [
+      { "name": "channel_manager.competitor_rate", "version": "1", "subject": "hospitality.channel_manager.competitor_rate.v1" }
+    ]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["channel_manager", "revenue_management", "booking_engine"]
+}

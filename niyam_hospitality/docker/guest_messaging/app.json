@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "id": "guest_messaging",
+    "name": "Guest Messaging",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Automated guest communication via SMS, WhatsApp, and Email. Pre-arrival, in-stay, and post-stay messaging with templates and scheduling.",
+    "tags": ["messaging", "sms", "whatsapp", "email", "guest_communication", "automation"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "http://localhost:5291/remoteEntry.js"
+    },
+    "port": 8931,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4223"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "guest_messaging.message_sent", "version": "1", "subject": "hospitality.guest_messaging.message_sent.v1" },
+      { "name": "guest_messaging.message_delivered", "version": "1", "subject": "hospitality.guest_messaging.message_delivered.v1" },
+      { "name": "guest_messaging.campaign_triggered", "version": "1", "subject": "hospitality.guest_messaging.campaign_triggered.v1" }
+    ],
+    "consumes": [
+      { "name": "front_office.checked_in", "version": "1", "subject": "hospitality.front_office.checked_in.v1" },
+      { "name": "front_office.checked_out", "version": "1", "subject": "hospitality.front_office.checked_out.v1" },
+      { "name": "front_office.reservation_created", "version": "1", "subject": "hospitality.front_office.reservation_created.v1" }
+    ]
+  },
+  "ai": { "enabled": true, "gateway": "vruksha-ai-gateway", "intents": ["personalize_message", "suggest_upsell"] },
+  "permissions": [
+    { "resource": "guest_messaging", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "templates", "actions": ["read", "write", "update", "delete"] },
+    { "resource": "campaigns", "actions": ["read", "write", "update", "delete"] }
+  ],
+  "config": {
+    "public": {
+      "defaultChannel": "email",
+      "supportedChannels": ["email", "sms", "whatsapp", "push"]
+    },
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL", "TWILIO_SID", "TWILIO_TOKEN", "WHATSAPP_TOKEN", "SMTP_PASSWORD"]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "guest_profiles_loyalty"]
+}

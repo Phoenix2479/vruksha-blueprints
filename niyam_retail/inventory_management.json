@@ -1,0 +1,135 @@
+{
+  "name": "Inventory Management",
+  "version": "2.0.0",
+  "description": "Comprehensive product and stock management with lifecycle tracking, rich attributes, and multi-dimensional inventory control.",
+  "module_path": "modules/inventory_management",
+  "handler": "inventory_management_handler.py",
+  "ui": {
+    "icon": "inventory_2",
+    "color": "#2196F3",
+    "sections": [
+      {
+        "name": "Product Management",
+        "components": [
+          { "title": "Product Catalog", "type": "table", "intent": "list_products" },
+          { "title": "Add Product", "type": "form", "intent": "add_product" },
+          { "title": "Bundle Builder", "type": "form", "intent": "create_bundle" },
+          { "title": "Lifecycle Manager", "type": "dashboard", "intent": "track_lifecycle" }
+        ]
+      },
+      {
+        "name": "Stock Control",
+        "components": [
+          { "title": "Stock Levels", "type": "table", "intent": "check_stock_levels" },
+          { "title": "Adjust Stock", "type": "form", "intent": "adjust_stock" },
+          { "title": "Transfer Stock", "type": "form", "intent": "transfer_stock" },
+          { "title": "Stock Take", "type": "form", "intent": "record_stock_take" }
+        ]
+      },
+      {
+        "name": "Warehouse Ops",
+        "components": [
+          { "title": "Bin Map", "type": "visual_map", "intent": "map_bin_location" },
+          { "title": "Receive Shipment", "type": "form", "intent": "receive_shipment" },
+          { "title": "Dead Stock Analysis", "type": "chart", "intent": "identify_dead_stock" }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "name": "add_product",
+      "description": "Creates a new product with rich attributes",
+      "parameters": [
+        { "name": "name", "type": "string", "required": true, "description": "Product name" },
+        { "name": "sku", "type": "string", "required": true, "description": "Stock Keeping Unit" },
+        { "name": "category_id", "type": "string", "required": true, "description": "Category hierarchy ID" },
+        { "name": "type", "type": "string", "required": true, "description": "simple, variant, bundle, service" },
+        { "name": "attributes", "type": "object", "required": false, "description": "Custom fields (color, size, fabric, wattage)" },
+        { "name": "lifecycle_state", "type": "string", "required": false, "description": "active, discontinued, seasonal, pre-order" },
+        { "name": "media", "type": "array", "required": false, "description": "Images (inc 360), videos, manuals" },
+        { "name": "pricing", "type": "object", "required": false, "description": "Cost, retail, competitive rules" }
+      ]
+    },
+    {
+      "name": "create_bundle",
+      "description": "Creates a product bundle or kit",
+      "parameters": [
+        { "name": "bundle_name", "type": "string", "required": true, "description": "Name of the bundle" },
+        { "name": "components", "type": "array", "required": true, "description": "List of product_ids and quantities" },
+        { "name": "pricing_strategy", "type": "string", "required": true, "description": "fixed_price, sum_of_parts, percentage_off" }
+      ]
+    },
+    {
+      "name": "add_stock",
+      "description": "Adds stock to inventory (Receipts)",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": true, "description": "ID of the product" },
+        { "name": "quantity", "type": "number", "required": true, "description": "Quantity to add" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Warehouse/Store location ID" },
+        { "name": "sub_location", "type": "string", "required": false, "description": "Bin/Shelf/Zone" },
+        { "name": "batch_info", "type": "object", "required": false, "description": "Lot number, serials, expiry date" },
+        { "name": "condition", "type": "string", "required": false, "description": "new, refurbished, damaged" }
+      ]
+    },
+    {
+      "name": "transfer_stock",
+      "description": "Transfers stock between locations",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": true, "description": "ID of the product" },
+        { "name": "quantity", "type": "number", "required": true, "description": "Quantity to transfer" },
+        { "name": "from_location", "type": "string", "required": true, "description": "Source location ID" },
+        { "name": "to_location", "type": "string", "required": true, "description": "Destination location ID" },
+        { "name": "transit_ref", "type": "string", "required": false, "description": "Shipping tracking number" }
+      ]
+    },
+    {
+      "name": "adjust_stock",
+      "description": "Adjusts stock levels (Corrections/Shrinkage)",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": true, "description": "ID of the product" },
+        { "name": "quantity_delta", "type": "number", "required": true, "description": "Change in quantity (+/-)" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Location of the stock" },
+        { "name": "reason_code", "type": "string", "required": true, "description": "theft, damage, miscount, promotion, sample" },
+        { "name": "notes", "type": "string", "required": false, "description": "Explanation or photo URL" }
+      ]
+    },
+    {
+      "name": "map_bin_location",
+      "description": "Assigns a product to a specific bin/shelf",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": true, "description": "Product ID" },
+        { "name": "location_id", "type": "string", "required": true, "description": "Warehouse ID" },
+        { "name": "zone", "type": "string", "required": true, "description": "Zone (Aisle)" },
+        { "name": "bin", "type": "string", "required": true, "description": "Bin/Shelf code" },
+        { "name": "capacity", "type": "number", "required": false, "description": "Max units capacity" }
+      ]
+    },
+    {
+      "name": "calculate_safety_stock",
+      "description": "Updates safety stock levels based on velocity",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": false, "description": "Specific product or all" },
+        { "name": "service_level", "type": "number", "required": false, "description": "Target service level % (e.g., 95)" },
+        { "name": "lookback_days", "type": "number", "required": false, "description": "Days of history to analyze" }
+      ]
+    },
+    {
+      "name": "identify_dead_stock",
+      "description": "Reports items with low turnover",
+      "parameters": [
+        { "name": "days_dormant", "type": "number", "required": false, "description": "Days without sale (default 90)" },
+        { "name": "category_id", "type": "string", "required": false, "description": "Filter by category" }
+      ]
+    },
+    {
+      "name": "check_stock_levels",
+      "description": "Queries current inventory",
+      "parameters": [
+        { "name": "product_id", "type": "string", "required": false, "description": "Filter by product" },
+        { "name": "location_id", "type": "string", "required": false, "description": "Filter by location" },
+        { "name": "low_stock_only", "type": "boolean", "required": false, "description": "Show only below reorder point" }
+      ]
+    }
+  ]
+}

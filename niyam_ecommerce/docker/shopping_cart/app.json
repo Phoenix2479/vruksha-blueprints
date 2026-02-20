@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "id": "shopping_cart",
+    "name": "Shopping Cart",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Shopping cart management with item tracking, coupon support, and abandonment detection",
+    "tags": ["ecommerce", "cart", "shopping", "coupons"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 9102,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "cart.updated",
+        "version": "1",
+        "subject": "ecommerce.cart.updated.v1"
+      },
+      {
+        "name": "cart.abandoned",
+        "version": "1",
+        "subject": "ecommerce.cart.abandoned.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "shopping_cart",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

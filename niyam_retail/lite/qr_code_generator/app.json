@@ -1,0 +1,171 @@
+{
+  "id": "qr_code_generator",
+  "name": "QR Code Generator",
+  "version": "1.0.0",
+  "description": "Generate dynamic QR codes with redirect support, bulk generation, and export capabilities",
+  "category": "utility",
+  "port": 8898,
+  "icon": "qr-code",
+  "tags": [
+    "qr",
+    "barcode",
+    "labels",
+    "product",
+    "payment",
+    "utility"
+  ],
+  "entry_point": "service.js",
+  "ui_path": "ui/dist",
+  "database": {
+    "type": "sqlite",
+    "tables": [
+      "qr_codes",
+      "qr_settings",
+      "qr_scan_log"
+    ]
+  },
+  "ai_intents": [
+    {
+      "intent": "generate_qr_code",
+      "description": "Create a new QR code for a product, URL, payment, or contact",
+      "examples": [
+        "create a QR code for my product",
+        "generate QR for payment",
+        "make a WiFi QR code",
+        "create contact QR"
+      ]
+    },
+    {
+      "intent": "view_qr_analytics",
+      "description": "View scan statistics and analytics for QR codes",
+      "examples": [
+        "show QR scan stats",
+        "how many times was my QR scanned",
+        "QR analytics"
+      ]
+    },
+    {
+      "intent": "bulk_generate_qr",
+      "description": "Generate QR codes in bulk for multiple products",
+      "examples": [
+        "create QR codes for all products",
+        "bulk generate product QRs",
+        "generate QRs for catalog"
+      ]
+    },
+    {
+      "intent": "export_qr_codes",
+      "description": "Export QR codes as PDF or image files",
+      "examples": [
+        "export QR codes to PDF",
+        "download all QR codes",
+        "print QR labels"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "network"
+  ],
+  "integrations": [
+    {
+      "app_id": "inventory_management",
+      "type": "product_catalog",
+      "description": "Fetch products for QR generation"
+    }
+  ],
+  "dependencies": {
+    "shared/db": "Database connection"
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/settings",
+      "description": "Get app settings"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/settings",
+      "description": "Update settings"
+    },
+    {
+      "method": "GET",
+      "path": "/api/qr",
+      "description": "List QR codes"
+    },
+    {
+      "method": "POST",
+      "path": "/api/qr",
+      "description": "Create QR code"
+    },
+    {
+      "method": "GET",
+      "path": "/api/qr/:id",
+      "description": "Get single QR"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/qr/:id",
+      "description": "Update QR code"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/qr/:id",
+      "description": "Delete QR code"
+    },
+    {
+      "method": "GET",
+      "path": "/api/qr/:id/image",
+      "description": "Get QR image (PNG/SVG)"
+    },
+    {
+      "method": "GET",
+      "path": "/qr/r/:id",
+      "description": "Dynamic redirect endpoint"
+    },
+    {
+      "method": "POST",
+      "path": "/api/qr/bulk",
+      "description": "Bulk generate QRs"
+    },
+    {
+      "method": "POST",
+      "path": "/api/export/pdf",
+      "description": "Export to PDF"
+    },
+    {
+      "method": "POST",
+      "path": "/api/export/zip",
+      "description": "Export as ZIP"
+    },
+    {
+      "method": "GET",
+      "path": "/api/analytics",
+      "description": "Get analytics overview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/analytics/:id",
+      "description": "Get QR analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "description": "Get products for QR"
+    },
+    {
+      "method": "POST",
+      "path": "/api/logo/upload",
+      "description": "Upload logo for QR"
+    }
+  ],
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "ui/dist"
+    },
+    "port": 8898,
+    "env": {}
+  }
+}

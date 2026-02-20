@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "id": "guest_dna",
+    "name": "Guest DNA & Affinity Engine",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Computes real-time affinity scores for menu items and services based on guest history, allergies, and preferences.",
+    "tags": [
+      "ai",
+      "personalization",
+      "guest",
+      "analytics"
+    ]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "server.js",
+      "ui": "ui/guest_dna-remote"
+    },
+    "port": 8850,
+    "env": {
+      "NODE_ENV": "production",
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/api/guest-dna"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "guest_dna.created",
+        "version": "1",
+        "subject": "hospitality.guest_dna.created.v1"
+      },
+      {
+        "name": "guest_dna.updated",
+        "version": "1",
+        "subject": "hospitality.guest_dna.updated.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "ollama",
+      "local",
+      "openrouter",
+      "factory-droid",
+      "azure-openai",
+      "bedrock",
+      "groq",
+      "mistral",
+      "cohere",
+      "kimi",
+      "qwen",
+      "zhipu-glm",
+      "deepseek",
+      "baichuan"
+    ],
+    "fallbackChain": [
+      "local",
+      "ollama",
+      "openrouter",
+      "openai"
+    ],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "guest_dna",
+      "actions": [
+        "read",
+        "write",
+        "update",
+        "delete"
+      ]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET",
+      "NATS_URL"
+    ]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

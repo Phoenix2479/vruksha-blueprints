@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "id": "product_catalog",
+    "name": "Product Catalog",
+    "version": "1.0.0",
+    "owner": "Vruksha Team",
+    "description": "Product catalog management with categories, variants, and search for e-commerce",
+    "tags": ["ecommerce", "products", "catalog", "categories", "variants"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": {
+      "service": "service.js",
+      "ui": "/ui/dist"
+    },
+    "port": 9101,
+    "env": {
+      "NATS_URL": "nats://127.0.0.1:4222"
+    }
+  },
+  "apis": {
+    "openapi": "./openapi.yaml",
+    "basePath": "/"
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      {
+        "name": "product.created",
+        "version": "1",
+        "subject": "ecommerce.product.created.v1"
+      },
+      {
+        "name": "product.updated",
+        "version": "1",
+        "subject": "ecommerce.product.updated.v1"
+      },
+      {
+        "name": "product.deleted",
+        "version": "1",
+        "subject": "ecommerce.product.deleted.v1"
+      }
+    ],
+    "consumes": []
+  },
+  "ai": {
+    "enabled": false,
+    "gateway": "vruksha-ai-gateway",
+    "intents": [],
+    "defaultProvider": "auto",
+    "allowedProviders": ["openai", "anthropic", "gemini", "ollama", "local", "openrouter"],
+    "fallbackChain": ["local", "ollama", "openrouter"],
+    "config": {
+      "maxTokens": 4096,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+  "permissions": [
+    {
+      "resource": "product_catalog",
+      "actions": ["read", "write", "update", "delete"]
+    }
+  ],
+  "config": {
+    "public": {},
+    "secrets": ["DB_PASSWORD", "JWT_SECRET", "NATS_URL"]
+  },
+  "health": {
+    "liveness": "/healthz",
+    "readiness": "/readyz"
+  },
+  "depends_on": []
+}

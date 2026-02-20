@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "mobile_guest_app",
+    "name": "Mobile Guest App Backend",
+    "version": "0.1.0",
+    "owner": "Vruksha Team",
+    "description": "Backend API for guest-facing mobile app with reservations, room service, chat, digital key, and loyalty features.",
+    "tags": ["mobile", "guest_app", "api", "push_notifications", "chat"]
+  },
+  "runtime": {
+    "language": "node",
+    "entrypoints": { "service": "service.js" },
+    "port": 8937,
+    "env": { "NATS_URL": "nats://127.0.0.1:4223" }
+  },
+  "events": {
+    "bus": "nats",
+    "produces": [
+      { "name": "mobile_app.order_placed", "version": "1", "subject": "hospitality.mobile_app.order_placed.v1" },
+      { "name": "mobile_app.request_submitted", "version": "1", "subject": "hospitality.mobile_app.request_submitted.v1" }
+    ],
+    "consumes": [
+      { "name": "front_office.checked_in", "version": "1", "subject": "hospitality.front_office.checked_in.v1" },
+      { "name": "room_service.order_updated", "version": "1", "subject": "hospitality.room_service.order_updated.v1" }
+    ]
+  },
+  "health": { "liveness": "/healthz", "readiness": "/readyz" },
+  "depends_on": ["front_office", "room_service_dining", "concierge_services", "guest_profiles_loyalty", "self_checkin_kiosk"]
+}
