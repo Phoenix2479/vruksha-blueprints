@@ -123,5 +123,5 @@ The `app.json` contract follows the [Vruksha App Contract Schema](./schema/app_c
 This project is licensed under the [Apache License 2.0](./LICENSE).
 
 ```
-Copyright 2026 Dinki + Claude + Droid (Factory.ai)
+Copyright 2026 Dinki 
 ```
