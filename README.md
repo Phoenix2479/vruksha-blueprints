@@ -34,6 +34,20 @@ Apps are downloaded from Vruksha Server and **run locally** on the user's machin
 | [niyam_accounting](./niyam_accounting/) | 18 | Double-entry ledger, AP/AR, tax (GST/TDS), payroll, budgeting |
 | [niyam_ecommerce](./niyam_ecommerce/) | 13 | Product catalog, cart, checkout, shipping, analytics |
 
+## Two Module Architectures
+
+Every vertical supports two module types:
+
+| | Docker | Lite |
+|---|---|---|
+| **Path** | `niyam_*/docker/module_name/` | `niyam_*/lite/module_name/` |
+| **Best for** | Cloud/server deployments | Desktop/offline-first |
+| **Database** | PostgreSQL | SQLite (shared) |
+| **Event bus** | NATS | Local EventEmitter |
+| **Requires Docker** | Yes | No |
+
+Not sure which to build? Start with **lite** — simpler setup, no infrastructure needed.
+
 ## What is a Blueprint?
 
 A blueprint is a self-contained app module with a standardized contract. Each module has:
@@ -45,7 +59,6 @@ your_module/
 ├── package.json    # Dependencies
 ├── routes/         # Express API routes
 ├── services/       # Business logic
-├── db/             # Database migrations & seeds
 └── ui/             # Optional frontend (React + Vite + Tailwind)
 ```
 
@@ -59,21 +72,26 @@ The `app.json` contract defines everything the Vruksha server needs to know abou
 git clone https://github.com/<your-username>/vruksha-blueprints.git
 cd vruksha-blueprints
 
-# Browse a vertical
+# Browse docker modules
 ls niyam_retail/docker/
+
+# Browse lite modules
+ls niyam_retail/lite/
 
 # Look at a module's contract
 cat niyam_retail/docker/billing_engine/app.json
+cat niyam_retail/lite/billing_engine/app.json
 ```
 
 ### Create a new module
 
 ```bash
-# Use the scaffold tool
+# Use the scaffold tool (supports both docker and lite)
 node tools/scaffold.js
 
 # Or manually copy a template
 cp -r _templates/docker-module/ niyam_retail/docker/my_new_module/
+cp -r _templates/lite-module/ niyam_retail/lite/my_new_module/
 # Edit app.json with your module's details
 ```
 
@@ -82,6 +100,7 @@ cp -r _templates/docker-module/ niyam_retail/docker/my_new_module/
 ```bash
 cd tools && npm install
 node validate.js ../niyam_retail/docker/my_new_module/app.json
+node validate.js ../niyam_retail/lite/my_new_module/app.json
 
 # Or validate everything
 node validate.js --all
@@ -105,11 +124,15 @@ The `app.json` contract follows the [Vruksha App Contract Schema](./schema/app_c
 |---------|----------|---------|
 | `metadata` | Yes | id, name, version, description, tags, vertical |
 | `runtime` | Yes | language (node/python/rust), entrypoints, port |
-| `events` | Recommended | NATS event bus - produces/consumes |
+| `events` | Recommended | Event bus — `nats` (docker) or `local` (lite) |
 | `permissions` | Optional | Resource access declarations |
-| `health` | Optional | Liveness/readiness endpoints (default: `/healthz`, `/readyz`) |
+| `health` | Optional | Health endpoints — `/healthz`+`/readyz` (docker) or `/health` (lite) |
 | `depends_on` | Optional | Other modules this one requires |
 | `ai` | Optional | AI/LLM integration configuration |
+
+## API Reference
+
+For details on the Vruksha Server API endpoints relevant to module developers, see the [Module Developer API Reference](./docs/MODULE_DEVELOPER_API.md).
 
 ## Community
 

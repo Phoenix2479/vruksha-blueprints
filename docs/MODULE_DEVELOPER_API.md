@@ -231,22 +231,23 @@ Headers: Content-Disposition: attachment; filename="billing_engine-1.0.0.tar.gz"
 
 ### `POST /api/modules/install`
 
-Batch install modules by ID.
+Batch install modules by ID. Returns `202 Accepted` — installation runs asynchronously. Track progress via WebSocket `module_event` events.
 
 ```json
 // Request
 {
-  "modules": ["billing_engine", "inventory_management"],
-  "vertical": "retail"
+  "ids": ["billing_engine", "inventory_management"]
 }
 
-// Response
+// Response (202 Accepted)
 {
-  "success": true,
-  "data": {
-    "installed": ["billing_engine", "inventory_management"],
-    "failed": []
-  }
+  "status": "accepted",
+  "installationId": "install_1706123456789",
+  "modules": [
+    { "id": "billing_engine", "status": "queued" },
+    { "id": "inventory_management", "status": "queued" }
+  ],
+  "message": "Installation started"
 }
 ```
 
