@@ -4,7 +4,8 @@ const path = require('path');
 const readline = require('readline');
 
 const ROOT = path.resolve(__dirname, '..');
-const TEMPLATE_DIR = path.join(ROOT, '_templates', 'docker-module');
+const DOCKER_TEMPLATE_DIR = path.join(ROOT, '_templates', 'docker-module');
+const LITE_TEMPLATE_DIR = path.join(ROOT, '_templates', 'lite-module');
 
 const VERTICALS = {
   retail: { dir: 'niyam_retail', portRange: '8800-8899' },
@@ -48,6 +49,19 @@ async function main() {
 
   console.log('\n  Vruksha Module Scaffolder');
   console.log('  ========================\n');
+
+  // Module type
+  let moduleType = '';
+  while (!moduleType) {
+    moduleType = await ask(rl, '  Module type (docker/lite): ');
+    moduleType = moduleType.toLowerCase();
+    if (moduleType !== 'docker' && moduleType !== 'lite') {
+      console.log('  Invalid type. Choose: docker or lite');
+      moduleType = '';
+    }
+  }
+
+  const isLite = moduleType === 'lite';
 
   // Module ID
   let moduleId = '';
@@ -98,26 +112,33 @@ async function main() {
 
   // Create module
   const verticalDir = VERTICALS[vertical].dir;
-  const destDir = path.join(ROOT, verticalDir, 'docker', moduleId);
+  const templateDir = isLite ? LITE_TEMPLATE_DIR : DOCKER_TEMPLATE_DIR;
+  const destDir = path.join(ROOT, verticalDir, moduleType, moduleId);
 
   if (fs.existsSync(destDir)) {
-    console.log(`\n  Error: ${verticalDir}/docker/${moduleId}/ already exists.`);
+    console.log(`\n  Error: ${verticalDir}/${moduleType}/${moduleId}/ already exists.`);
     process.exit(1);
   }
 
   // Copy template
-  copyDir(TEMPLATE_DIR, destDir);
+  copyDir(templateDir, destDir);
 
   // Replace placeholders in all files
+  const dashId = moduleId.replace(/_/g, '-');
   const replacements = {
     'your_module_id': moduleId,
     'Your Module Name': displayName,
-    'your-module-id': moduleId.replace(/_/g, '-'),
+    'your-module-id': dashId,
     'Brief description of what this module does': description,
     'Your Name': owner,
     '"port": 0': `"port": ${port}`,
     '"vertical": "retail"': `"vertical": "${vertical}"`,
   };
+
+  if (isLite) {
+    replacements['@niyam/lite-your-module-id'] = `@niyam/lite-${dashId}`;
+    replacements['Niyam Lite - Your Module Name (retail)'] = `Niyam Lite - ${displayName} (${vertical})`;
+  }
 
   const files = ['app.json', 'service.js', 'package.json', 'README.md', 'routes/index.js'];
   for (const file of files) {
@@ -137,7 +158,7 @@ async function main() {
   fs.writeFileSync(servicePath, serviceContent);
 
   // Print result
-  const relPath = `${verticalDir}/docker/${moduleId}`;
+  const relPath = `${verticalDir}/${moduleType}/${moduleId}`;
   console.log(`\n  Created: ${relPath}/`);
   console.log('    ├── app.json');
   console.log('    ├── service.js');
@@ -147,7 +168,15 @@ async function main() {
   console.log('\n  Next steps:');
   console.log(`    cd ${relPath}`);
   console.log('    npm install');
-  console.log('    npm start');
+
+  if (isLite) {
+    console.log('    node service.js');
+    console.log(`\n  Note: Lite modules use shared utilities from ${verticalDir}/lite/shared/`);
+    console.log('  (db.js, eventBus.js, accounting-hook.js). No Docker required.');
+  } else {
+    console.log('    npm start');
+  }
+
   console.log(`\n  Validate: node tools/validate.js ${relPath}/app.json\n`);
 }
 
