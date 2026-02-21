@@ -146,5 +146,5 @@ For details on the Vruksha Server API endpoints relevant to module developers, s
 This project is licensed under the [Apache License 2.0](./LICENSE).
 
 ```
-Copyright 2026 Dinki 
+Copyright 2026 Dinki ( reddishfirebird@gmail.com )
 ```
