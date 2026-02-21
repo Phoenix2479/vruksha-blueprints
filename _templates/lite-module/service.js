@@ -7,7 +7,7 @@ const { initDb } = require('../shared/db');
 const app = express();
 const PORT = process.env.PORT || 0; // Replace 0 with your assigned port
 
-app.use(cors());
+app.use(cors()); // Open CORS — intentional for local desktop use
 app.use(express.json());
 
 // Serve static UI build if present
@@ -20,8 +20,8 @@ app.get('/health', (req, res) => res.json({ status: 'ok', service: 'your_module_
 // Your routes
 app.use('/', require('./routes'));
 
-// SPA fallback — serve index.html for unmatched routes
-app.get('*', (req, res) => {
+// SPA fallback — serve index.html for non-API routes only
+app.get(/^(?!\/api\/).*/, (req, res) => {
   const indexPath = path.join(uiPath, 'index.html');
   if (fs.existsSync(indexPath)) res.sendFile(indexPath);
   else res.json({ service: 'your_module_id', mode: 'lite', status: 'running' });

@@ -128,7 +128,7 @@ Register a new Niyam instance.
 // Request
 {
   "instanceId": "unique-instance-id",
-  "publicKey": "base64-encoded-ed25519-public-key",
+  "publicKey": "<your-base64-encoded-ed25519-public-key>",
   "hostname": "user-machine-name"
 }
 

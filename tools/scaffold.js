@@ -66,9 +66,9 @@ async function main() {
   // Module ID
   let moduleId = '';
   while (!moduleId) {
-    moduleId = await ask(rl, '  Module ID (lowercase, underscores only): ');
+    moduleId = await ask(rl, '  Module ID (lowercase, underscores/hyphens): ');
     if (!/^[a-z0-9][a-z0-9_-]{2,64}$/.test(moduleId)) {
-      console.log('  Invalid ID. Use lowercase letters, numbers, underscores. Min 3 chars.');
+      console.log('  Invalid ID. Use lowercase letters, numbers, underscores, hyphens. Min 3 chars.');
       moduleId = '';
     }
   }
@@ -123,9 +123,16 @@ async function main() {
   // Copy template
   copyDir(templateDir, destDir);
 
-  // Replace placeholders in all files
+  // Replace placeholders in all files (longer strings first to avoid partial matches)
   const dashId = moduleId.replace(/_/g, '-');
-  const replacements = {
+  const replacements = {};
+
+  if (isLite) {
+    replacements['@niyam/lite-your-module-id'] = `@niyam/lite-${dashId}`;
+    replacements['Niyam Lite - Your Module Name (retail)'] = `Niyam Lite - ${displayName} (${vertical})`;
+  }
+
+  Object.assign(replacements, {
     'your_module_id': moduleId,
     'Your Module Name': displayName,
     'your-module-id': dashId,
@@ -133,12 +140,7 @@ async function main() {
     'Your Name': owner,
     '"port": 0': `"port": ${port}`,
     '"vertical": "retail"': `"vertical": "${vertical}"`,
-  };
-
-  if (isLite) {
-    replacements['@niyam/lite-your-module-id'] = `@niyam/lite-${dashId}`;
-    replacements['Niyam Lite - Your Module Name (retail)'] = `Niyam Lite - ${displayName} (${vertical})`;
-  }
+  });
 
   const files = ['app.json', 'service.js', 'package.json', 'README.md', 'routes/index.js'];
   for (const file of files) {
