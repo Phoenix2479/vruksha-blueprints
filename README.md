@@ -56,7 +56,7 @@ The `app.json` contract defines everything the Vruksha server needs to know abou
 ### Explore existing modules
 
 ```bash
-git clone https://github.com/<your-username>/vruksha-blueprints.git
+git clone https://github.com/Phoenix2479/vruksha-blueprints.git
 cd vruksha-blueprints
 
 # Browse a vertical
@@ -123,5 +123,5 @@ The `app.json` contract follows the [Vruksha App Contract Schema](./schema/app_c
 This project is licensed under the [Apache License 2.0](./LICENSE).
 
 ```
-Copyright 2026 Dinki 
+Copyright 2026 Dinki <reddishfirebird@gmail.com>
 ```

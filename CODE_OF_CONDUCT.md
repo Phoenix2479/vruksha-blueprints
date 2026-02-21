@@ -45,7 +45,7 @@ an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project maintainers via [GitHub Issues](../../issues) with the
+reported to the project maintainers at reddishfirebird@gmail.com or via [GitHub Issues](../../issues) with the
 label `conduct`. All complaints will be reviewed and investigated promptly and
 fairly.
 

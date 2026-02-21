@@ -13,7 +13,7 @@ Thank you for your interest in contributing! Vruksha blueprints power businesses
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/<your-username>/vruksha-blueprints.git
+git clone https://github.com/Phoenix2479/vruksha-blueprints.git
 cd vruksha-blueprints
 
 # 2. Install validation tools

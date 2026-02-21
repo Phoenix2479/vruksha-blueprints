@@ -7,7 +7,7 @@ If you discover a security vulnerability in any Vruksha blueprint module, **plea
 Instead, report it through one of these channels:
 
 1. **GitHub Security Advisories** (preferred): Use the "Report a vulnerability" button on the Security tab of this repository
-2. **Email**: Contact the maintainers directly (see repository profile)
+2. **Email**: Contact the maintainers at reddishfirebird@gmail.com
 
 ### What to Include
 
