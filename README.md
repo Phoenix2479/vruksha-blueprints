@@ -5,25 +5,50 @@
 
 **Open-source app modules for the Vruksha ecosystem.**
 
-Vruksha is an App Store for the [Niyam](https://github.com/niyam) desktop client. This repository contains the **blueprints** (app modules) that power businesses across retail, hospitality, accounting, and e-commerce verticals.
+This repository contains **145+ blueprints** (app modules) that run inside the [Niyam](https://github.com/niyam) desktop platform — powering businesses across retail, hospitality, accounting, and e-commerce.
 
-## How It Works
+---
+
+## About the Platform
+
+### Niyam
+
+**Niyam** is a desktop ERP platform for small and medium businesses. It runs on your machine, works offline, and keeps all business data local — no cloud subscriptions, no vendor lock-in, no data leaving your device without your say-so.
+
+Users interact with Niyam through a natural language interface — they can ask things like "How many canvas bags do I have?" or "Show me today's check-ins" and the platform routes the request to the right module. If the module isn't installed yet, Niyam guides the user to find and install it.
+
+### Vruksha
+
+**Vruksha** is Niyam's app catalog — think of it as the app store. It manages the full lifecycle of modules: discovery, distribution, installation, and updates. Modules in this repo get picked up by the Vruksha server and made available to Niyam users.
+
+### How It Fits Together
 
 ```
-Vruksha Server (private)          This Repo (public)
-========================          ==================
-- Distributes apps                - 145+ app modules
-- Analytics & recommendations     - App contracts (app.json)
-- Module Federation host          - Business logic & UI
-                    ↓                       ↑
-              Niyam Client           Community builds
-              ============           new modules here
-              - Runs apps LOCALLY
-              - Offline-first
-              - Data stays on device
+This Repo (public)              Vruksha Server              Niyam Client
+==================              ==============              ============
+You build a module    ──→    Catalog & distribution   ──→   User installs
+Community contributes        Signed & verified               Runs LOCALLY
+145+ app modules             Module discovery                Offline-first
+                                                             Data on device
 ```
 
-Apps are downloaded from Vruksha Server and **run locally** on the user's machine via the Niyam desktop client. No cloud dependency required.
+Modules are signed before distribution and verified on install. Users see what permissions a module needs before installing it — nothing runs without explicit consent.
+
+### Two Editions
+
+Niyam ships in two editions, and modules can target either or both:
+
+| | **Niyam Pro Max** | **Niyam Max Lite** |
+|---|---|---|
+| **Target users** | Technical teams, server deployments | Non-technical users, single machine |
+| **Module type** | Docker (`niyam_*/docker/`) | Lite (`niyam_*/lite/`) |
+| **Database** | PostgreSQL | SQLite |
+| **Event bus** | NATS | Local EventEmitter |
+| **Infrastructure** | Docker required | Nothing — just download and run |
+
+**For contributors:** Start with **lite** — simpler to develop, no infrastructure needed. Both share the same `app.json` contract, so a lite module can be adapted to docker later.
+
+---
 
 ## Verticals
 
@@ -33,20 +58,6 @@ Apps are downloaded from Vruksha Server and **run locally** on the user's machin
 | [niyam_hospitality](./niyam_hospitality/) | 56 | Front office, restaurant POS, kitchen ops, housekeeping, events |
 | [niyam_accounting](./niyam_accounting/) | 18 | Double-entry ledger, AP/AR, tax (GST/TDS), payroll, budgeting |
 | [niyam_ecommerce](./niyam_ecommerce/) | 13 | Product catalog, cart, checkout, shipping, analytics |
-
-## Two Module Architectures
-
-Every vertical supports two module types:
-
-| | Docker | Lite |
-|---|---|---|
-| **Path** | `niyam_*/docker/module_name/` | `niyam_*/lite/module_name/` |
-| **Best for** | Cloud/server deployments | Desktop/offline-first |
-| **Database** | PostgreSQL | SQLite (shared) |
-| **Event bus** | NATS | Local EventEmitter |
-| **Requires Docker** | Yes | No |
-
-Not sure which to build? Start with **lite** — simpler setup, no infrastructure needed.
 
 ## What is a Blueprint?
 
